@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace YourQS.Api.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class HealthController : ControllerBase
+namespace YourQS.API.Controllers
 {
-    [HttpGet]
-    public IActionResult Get()
+    [ApiController]
+    [Route("api/[controller]")]
+    public class HealthController : ControllerBase
     {
-        return Ok(new { message = "Backend is running" });
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(new { message = "YourQS API is running" });
+        }
     }
 }

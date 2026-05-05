@@ -82,7 +82,7 @@ The objective is to enhance the client’s existing quantity surveying and const
 - [@Becky Zhou](https://github.com/meanaspotato) - Backend Developer
 - [@Max Makarov](https://github.com/panamilit) - Data Engineer
 - [@Jackson Full](https://www.github.com/) - Frontend Developer
-- [@Mantej Singh](https://www.github.com/) - Data Analyst
+- [@Mantej Singh](https://www.github.com/singhm2929-bot) - Data Analyst
 
 
 

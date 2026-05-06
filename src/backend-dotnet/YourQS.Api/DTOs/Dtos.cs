@@ -4,7 +4,6 @@ namespace YourQS.API.DTOs
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; }
     }
 
     public class ProjectModelDto
@@ -12,7 +11,6 @@ namespace YourQS.API.DTOs
         public string Id { get; set; } = string.Empty;
         public string ProjectId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; }
     }
 
     public class ModelAttributesDto
@@ -31,13 +29,9 @@ namespace YourQS.API.DTOs
 
     public class CostItemDto
     {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Code { get; set; } = string.Empty;
-        public string ScopeId { get; set; } = string.Empty;
-        public string Family { get; set; } = string.Empty;
-        public string FamilyCode { get; set; } = string.Empty;
-        public string ItemMasterCode { get; set; } = string.Empty;
-        public string Notes { get; set; } = string.Empty;
+        public string ScopeName { get; set; } = string.Empty;
+        public decimal TotalCost { get; set; }
+        public decimal TotalSellingPrice { get; set; }
+        public int ItemCount { get; set; }
     }
 }

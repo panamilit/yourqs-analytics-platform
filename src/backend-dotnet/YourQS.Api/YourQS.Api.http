@@ -12,18 +12,26 @@ Accept: application/json
 
 ###
 
-### get all costs by model
-GET {{HostAddress}}/api/models/1/costs
+### get project by id
+GET {{HostAddress}}/api/projects/{8D32E6AC-59E4-4253-82D3-82E30B88A171}
+Accept: application/json
+###
+
+### get project with a different id
+GET {{HostAddress}}/api/projects/{00224DE4-59B5-4085-976D-97B07890FEF9}
 Accept: application/json
 
 ###
 
-### get costs by scope
-GET {{HostAddress}}/api/models/1/costs/by-scope?scopeId=EXTERIOR
+### get model attributes for project 1
+GET {{HostAddress}}/api/projects/{8D32E6AC-59E4-4253-82D3-82E30B88A171}/model-attributes
 Accept: application/json
 
+### get model attributes for project 2
+GET {{HostAddress}}/api/projects/{00224DE4-59B5-4085-976D-97B07890FEF9}/model-attributes
+Accept: application/json
 ###
 
-### get model attributes
-GET {{HostAddress}}/api/models/1/attributes
+### get cost breakdown by scope for project
+GET {{HostAddress}}/api/projects/{8D32E6AC-59E4-4253-82D3-82E30B88A171}/cost-breakdown/scope
 Accept: application/json

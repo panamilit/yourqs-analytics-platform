@@ -6,6 +6,5 @@ namespace YourQS.API.Services.Interfaces
     {
         Task<IEnumerable<ProjectDto>> GetAllProjectsAsync();
         Task<ProjectDto?> GetProjectByIdAsync(string id);
-        Task<IEnumerable<ProjectModelDto>> GetModelsByProjectAsync(string projectId);
     }
 }

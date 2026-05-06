@@ -7,12 +7,10 @@ namespace YourQS.API.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IModelRepository _modelRepository;
 
-        public ProjectService(IProjectRepository projectRepository, IModelRepository modelRepository)
+        public ProjectService(IProjectRepository projectRepository)
         {
             _projectRepository = projectRepository;
-            _modelRepository = modelRepository;
         }
 
         public async Task<IEnumerable<ProjectDto>> GetAllProjectsAsync()
@@ -22,7 +20,6 @@ namespace YourQS.API.Services
             {
                 Id = p.REC_ID,
                 Name = p.NAME,
-                CreatedDate = p.INS_DT
             });
         }
 
@@ -35,20 +32,7 @@ namespace YourQS.API.Services
             {
                 Id = project.REC_ID,
                 Name = project.NAME,
-                CreatedDate = project.INS_DT
             };
-        }
-
-        public async Task<IEnumerable<ProjectModelDto>> GetModelsByProjectAsync(string projectId)
-        {
-            var models = await _modelRepository.GetModelsByProjectAsync(projectId);
-            return models.Select(m => new ProjectModelDto
-            {
-                Id = m.REC_ID,
-                ProjectId = m.PROJ_REC_ID,
-                Name = m.NAME,
-                CreatedDate = m.INS_DT
-            });
         }
     }
 }

@@ -14,42 +14,31 @@ namespace YourQS.API.Repositories
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<IEnumerable<ProjectModel>> GetModelsByProjectAsync(string projectId)
+        public async Task<IEnumerable<ModelAttributes>> GetAttributesByProjectAsync(string projectId)
         {
             const string sql = @"
-                SELECT REC_ID, PROJ_REC_ID, NAME, INS_DT
-                FROM PROJ_MODEL_HEADER
-                WHERE PROJ_REC_ID = @ProjectId";
+                SELECT
+                    pma.REC_ID,
+                    pma.PROJ_MASTER_REC_ID,
+                    pma.MODEL_NAME,
+                    pma.CODE,
+                    pma.MODEL_DT,
+                    pma.AFFECTED_AREA,
+                    pma.FLOOR_AREA,
+                    pma.EXT_WALL_AREA,
+                    pma.INT_WALL_AREA,
+                    pma.ROOF_AREA,
+                    pma.CEILING_AREA,
+                    pma.BATHROOM_COUNT,
+                    pma.KITCHEN_COUNT,
+                    pma.NO_LEVELS,
+                    pma.NO_HOUSING_UNITS,
+                    pma.LABOUR_HOURS
+                FROM PROJ_MODEL_ATTRIBUTES pma
+                WHERE pma.PROJ_MASTER_REC_ID = @ProjectId";
 
             using var connection = _connectionFactory.CreateConnection();
-            return await connection.QueryAsync<ProjectModel>(sql, new { ProjectId = projectId });
-        }
-
-        public async Task<IEnumerable<ModelAttributes>> GetAttributesByModelAsync(string modelHeaderId)
-        {
-            const string sql = @"
-                SELECT REC_ID, MODEL_HEADER_REC_ID, MODEL_ELEMENT_REC_ID,
-                       FAMILY, ITEM_MASTER_CODE, SCOPE_ID,
-                       AREA, VOLUME, ELEMENTLENGTH, HEIGHT, MEMBER_COUNT, INS_DT
-                FROM PROJ_MODEL_FAMILY_ATTRIBUTES
-                WHERE MODEL_HEADER_REC_ID = @ModelHeaderId";
-
-            using var connection = _connectionFactory.CreateConnection();
-            return await connection.QueryAsync<ModelAttributes>(sql, new { ModelHeaderId = modelHeaderId });
-        }
-
-        public async Task<IEnumerable<ModelAttributes>> GetAttributesByScopeAsync(string modelHeaderId, string scopeId)
-        {
-            const string sql = @"
-                SELECT REC_ID, MODEL_HEADER_REC_ID, MODEL_ELEMENT_REC_ID,
-                       FAMILY, ITEM_MASTER_CODE, SCOPE_ID,
-                       AREA, VOLUME, ELEMENTLENGTH, HEIGHT, MEMBER_COUNT, INS_DT
-                FROM PROJ_MODEL_FAMILY_ATTRIBUTES
-                WHERE MODEL_HEADER_REC_ID = @ModelHeaderId
-                  AND SCOPE_ID = @ScopeId";
-
-            using var connection = _connectionFactory.CreateConnection();
-            return await connection.QueryAsync<ModelAttributes>(sql, new { ModelHeaderId = modelHeaderId, ScopeId = scopeId });
+            return await connection.QueryAsync<ModelAttributes>(sql, new { ProjectId = projectId });
         }
     }
 }

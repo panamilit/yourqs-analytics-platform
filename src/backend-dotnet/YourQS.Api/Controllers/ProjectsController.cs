@@ -31,12 +31,5 @@ namespace YourQS.API.Controllers
             return Ok(project);
         }
 
-        /// <summary>GET /api/projects/{id}/models — returns BIM models for a project</summary>
-        [HttpGet("{id}/models")]
-        public async Task<IActionResult> GetModels(string id)
-        {
-            var models = await _projectService.GetModelsByProjectAsync(id);
-            return Ok(models);
-        }
     }
 }

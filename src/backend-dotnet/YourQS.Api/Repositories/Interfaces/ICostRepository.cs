@@ -4,7 +4,6 @@ namespace YourQS.API.Repositories.Interfaces
 {
     public interface ICostRepository
     {
-        Task<IEnumerable<CostItem>> GetAllCostsByModelAsync(string modelHeaderId);
-        Task<IEnumerable<CostItem>> GetCostsByScopeAsync(string modelHeaderId, string scopeId);
+        Task<IEnumerable<CostItem>> GetCostBreakdownByScopeAsync(string projectId);
     }
 }

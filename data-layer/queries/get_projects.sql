@@ -4,9 +4,10 @@
 -- Limit 100: temporary option
 
 
-SELECT TOP 100
-	pm.REC_ID,
-	pm.NAME
+SELECT
+	pm."REC_ID",
+	pm."NAME"
 FROM PROJ_MASTER pm
-ORDER BY pm.NAME;
+ORDER BY pm."NAME"
+LIMIT 100;
 

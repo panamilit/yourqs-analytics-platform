@@ -437,6 +437,7 @@ __pycache__/
 *.csv
 *.xlsx
 *.db
+*.backup 
 
 # Secrets
 .env

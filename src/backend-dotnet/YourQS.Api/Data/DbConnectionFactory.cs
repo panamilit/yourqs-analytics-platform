@@ -1,5 +1,5 @@
 using System.Data;
-using System.Data.OleDb;
+using Npgsql;
 
 namespace YourQS.API.Data
 {
@@ -9,13 +9,13 @@ namespace YourQS.API.Data
 
         public DbConnectionFactory(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AccessDb")
-                ?? throw new InvalidOperationException("Connection string 'AccessDb' not found in appsettings.json.");
+            _connectionString = configuration.GetConnectionString("PostgresDb")
+                ?? throw new InvalidOperationException("Connection string 'PostgresDb' not found in appsettings.json.");
         }
 
         public IDbConnection CreateConnection()
         {
-            return new OleDbConnection(_connectionString);
+            return new NpgsqlConnection(_connectionString);
         }
     }
 }

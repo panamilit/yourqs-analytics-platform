@@ -17,6 +17,7 @@ builder.Services.AddSingleton<DbConnectionFactory>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IModelRepository, ModelRepository>();
 builder.Services.AddScoped<ICostRepository, CostRepository>();
+builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
 // Services
 builder.Services.AddScoped<IProjectService, ProjectService>();

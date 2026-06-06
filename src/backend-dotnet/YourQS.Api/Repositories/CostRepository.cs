@@ -18,15 +18,15 @@ namespace YourQS.API.Repositories
         {
             const string sql = @"
                 SELECT
-                    jce.NAME AS ScopeName,
-                    SUM(jci.COST_PRICE) AS TotalCost,
-                    SUM(jci.SELLING_PRICE) AS TotalSellingPrice,
+                    jce.name AS ScopeName,
+                    SUM(jci.cost_price) AS TotalCost,
+                    SUM(jci.selling_price) AS TotalSellingPrice,
                     COUNT(*) AS ItemCount
-                FROM JOB_COST_ITEM jci
-                INNER JOIN JOB_COST_ELEMENT jce
-                    ON jci.JOB_COST_ELEMENT_REC_ID = jce.REC_ID
-                WHERE jce.PROJ_MASTER_REC_ID = @ProjectId
-                GROUP BY jce.NAME";
+                FROM job_cost_item jci
+                INNER JOIN job_cost_element jce
+                    ON jci.job_cost_element_rec_id = jce.rec_id
+                WHERE jce.proj_master_rec_id = @ProjectId
+                GROUP BY jce.name";
 
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryAsync<CostItem>(sql, new { ProjectId = projectId });

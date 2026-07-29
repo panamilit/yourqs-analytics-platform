@@ -1,9 +1,12 @@
+![Logo](https://media.discordapp.net/attachments/1224623887505952819/1532005280190304266/content.png?ex=6a6b469a&is=6a69f51a&hm=1ce9e95d45a06184b2cd4bfc33a41a2f5ce682fd9576860bc83207fc92e5e3f9&=&format=webp&quality=lossless)
+
+
 
 # R&amp;D Project 2026 - EX35 (Capstone project for YourQS: analytics platform for quantity surveying data)
 
 This project is developed as part of the final-year Capstone Project at Auckland University of Technology (AUT) in collaboration with YourQS.
 
-The objective is to enhance the client’s existing quantity surveying and construction cost estimation platform by integrating structured data processing, backend service architecture, advanced analytics, and AI-assisted natural language interaction.
+The objective is to enhance the client's existing quantity surveying and construction cost estimation platform through cloud-based data management, backend services, analytical reporting, and AI-assisted natural language interaction.
 
 
 ## Technical Stack
@@ -17,9 +20,10 @@ The objective is to enhance the client’s existing quantity surveying and const
 
 **Data & Analytics Layer**
 
-- Access SQL
-- Microsoft Access (.accdb) for initial client dataset
-- Query optimization and relational mapping
+- Supabase PostgreSQL (cloud-hosted shared database)
+- Microsoft Access (.accdb) as the original client dataset
+- Data migration: Microsoft Access → PostgreSQL → Supabase
+- SQL query optimization, indexing, and relational mapping
 - Python3
 - Pandas / NumPy / Matplotlib Pyplot
 - Jupyter Notebook
@@ -34,10 +38,11 @@ The objective is to enhance the client’s existing quantity surveying and const
 **Engineering & Collaboration**
 
 - GitHub
-- DBeaver / MS Access
+- DBeaver / MS Access / Supabase Dashboard
 - OneDrive
 - Microsoft Teams
 - Lucidchart / Lucidspark / Visual Paradigm
+
 ## Core Objectives
 
 - Design a scalable service architecture for project cost retrieval and analysis
@@ -48,7 +53,7 @@ The objective is to enhance the client’s existing quantity surveying and const
 - Maintain secure internal-only handling of commercial project data
 
 
-## Repository Structure
+## Repository Structure (In progress...)
 
     yourqs-capstone/ 
 
@@ -79,17 +84,18 @@ The objective is to enhance the client’s existing quantity surveying and const
 
 ## Authors
 
-- [@Becky Zhou](https://github.com/meanaspotato) - Backend Developer
-- [@Max Makarov](https://github.com/panamilit) - Data Engineer
-- [@Jackson Full](https://www.github.com/) - Frontend Developer
-- [@Mantej Singh](https://www.github.com/singhm2929-bot) - Data Analyst
-
+- [@Becky Zhou](https://github.com/meanaspotato) - Project Manager & Fullstack Developer
+- [@Max Makarov](https://github.com/panamilit) - Data Engineer & Analytics Developer
+- [@Jackson Full](https://www.github.com/) - Technical Writer & Documentation Specialist
+- [@Mantej Singh](https://www.github.com/singhm2929-bot) - Research Analyst & Technical Writer
+ 
 
 
 ## Appendix
 
 Developed under the Auckland University of Technology (AUT) Bachelor of Computer and Information Sciences Capstone Project.
 
-**Note:** within a real-world industry collaboration with YourQS.
+**Note:** This project is conducted in collaboration with YourQS as part of the AUT Bachelor of Computer and Information Sciences Capstone programme.
+
 
 

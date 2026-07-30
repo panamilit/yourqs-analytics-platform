@@ -290,6 +290,11 @@ UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
 *.rptproj.bak
+*.bak
+*.backup
+*.dump
+
+
 
 # SQL Server files
 *.mdf
@@ -410,6 +415,7 @@ FodyWeavers.xsd
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
+.vscode/
 
 # Local History for Visual Studio Code
 .history/

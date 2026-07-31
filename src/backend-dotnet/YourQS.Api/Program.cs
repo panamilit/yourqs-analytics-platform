@@ -18,6 +18,7 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IModelRepository, ModelRepository>();
 builder.Services.AddScoped<ICostRepository, CostRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+builder.Services.AddScoped<IProjectOverviewRepository, ProjectOverviewRepository>();
 
 // Services
 builder.Services.AddScoped<IProjectService, ProjectService>();

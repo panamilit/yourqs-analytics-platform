@@ -25,10 +25,10 @@ namespace YourQS.API.Repositories
                     CASE WHEN pma.""FLOOR_AREA"" > 0
                          THEN SUM(jci.selling_price) / CAST(pma.""FLOOR_AREA"" AS NUMERIC)
                          ELSE 0 END  AS CostPerSqm
-                FROM proj_master pm
-                JOIN proj_model_attributes pma ON pma.""PROJ_MASTER_REC_ID"" = pm.""REC_ID""
-                JOIN job_cost_element jce       ON jce.proj_master_rec_id = pm.""REC_ID""
-                JOIN job_cost_item jci          ON jci.job_cost_element_rec_id = jce.rec_id
+                FROM public.proj_master pm
+                JOIN public.proj_model_attributes pma ON pma.""PROJ_MASTER_REC_ID"" = pm.""REC_ID""
+                JOIN public.job_cost_element jce       ON jce.proj_master_rec_id = pm.""REC_ID""
+                JOIN public.job_cost_item jci          ON jci.job_cost_element_rec_id = jce.rec_id
                 WHERE pma.""FLOOR_AREA"" > 0
                 GROUP BY pm.""REC_ID"", pm.""NAME"", pma.""FLOOR_AREA""
                 ORDER BY CostPerSqm DESC";
@@ -70,8 +70,8 @@ namespace YourQS.API.Repositories
                 SELECT
                     jce.name AS ScopeName,
                     SUM(jci.selling_price) AS OriginalCost
-                FROM job_cost_element jce
-                JOIN job_cost_item jci ON jci.job_cost_element_rec_id = jce.rec_id
+                FROM public.job_cost_element jce
+                JOIN public.job_cost_item jci ON jci.job_cost_element_rec_id = jce.rec_id
                 WHERE jce.proj_master_rec_id = @ProjectId
                   AND LOWER(jce.name) = LOWER(@ScopeName)
                 GROUP BY jce.name";

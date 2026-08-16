@@ -16,7 +16,7 @@ namespace YourQS.API.Repositories
 
         public async Task<IEnumerable<Project>> GetAllProjectsAsync()
         {
-            const string sql = @"SELECT ""REC_ID"", ""NAME"" FROM proj_master";
+            const string sql = @"SELECT ""REC_ID"", ""NAME"" FROM public.proj_master";
 
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryAsync<Project>(sql);
@@ -24,7 +24,7 @@ namespace YourQS.API.Repositories
 
         public async Task<Project?> GetProjectByIdAsync(string id)
         {
-            const string sql = @"SELECT ""REC_ID"", ""NAME"" FROM proj_master WHERE ""REC_ID"" = @Id";
+            const string sql = @"SELECT ""REC_ID"", ""NAME"" FROM public.proj_master WHERE ""REC_ID"" = @Id";
 
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryFirstOrDefaultAsync<Project>(sql, new { Id = id });

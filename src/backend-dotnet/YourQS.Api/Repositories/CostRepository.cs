@@ -22,8 +22,8 @@ namespace YourQS.API.Repositories
                     SUM(jci.cost_price) AS TotalCost,
                     SUM(jci.selling_price) AS TotalSellingPrice,
                     COUNT(*) AS ItemCount
-                FROM job_cost_item jci
-                INNER JOIN job_cost_element jce
+                FROM public.job_cost_item jci
+                INNER JOIN public.job_cost_element jce
                     ON jci.job_cost_element_rec_id = jce.rec_id
                 WHERE jce.proj_master_rec_id = @ProjectId
                 GROUP BY jce.name";

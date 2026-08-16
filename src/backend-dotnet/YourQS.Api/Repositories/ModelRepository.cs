@@ -34,7 +34,7 @@ namespace YourQS.API.Repositories
                     pma.""NO_LEVELS"",
                     pma.""NO_HOUSING_UNITS"",
                     pma.""LABOUR_HOURS""
-                FROM public.proj_model_attributes pma
+                FROM public.""PROJ_MODEL_ATTRIBUTES"" pma
                 WHERE pma.""PROJ_MASTER_REC_ID"" = @ProjectId";
 
             using var connection = _connectionFactory.CreateConnection();

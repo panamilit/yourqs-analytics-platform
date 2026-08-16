@@ -18,20 +18,15 @@ namespace YourQS.API.Repositories
         {
             const string sql = @"
                 SELECT
-                    pm.""REC_ID""        AS ProjectId,
-                    pm.""NAME""          AS ProjectName,
-                    pma.""FLOOR_AREA""   AS FloorArea,
-                    SUM(jci.selling_price) AS TotalSellingPrice,
-                    CASE WHEN pma.""FLOOR_AREA"" > 0
-                         THEN SUM(jci.selling_price) / CAST(pma.""FLOOR_AREA"" AS NUMERIC)
-                         ELSE 0 END  AS CostPerSqm
-                FROM public.proj_master pm
-                JOIN public.proj_model_attributes pma ON pma.""PROJ_MASTER_REC_ID"" = pm.""REC_ID""
-                JOIN public.job_cost_element jce       ON jce.proj_master_rec_id = pm.""REC_ID""
-                JOIN public.job_cost_item jci          ON jci.job_cost_element_rec_id = jce.rec_id
-                WHERE pma.""FLOOR_AREA"" > 0
-                GROUP BY pm.""REC_ID"", pm.""NAME"", pma.""FLOOR_AREA""
-                ORDER BY CostPerSqm DESC";
+                    project_id AS ""ProjectId"",
+                    project_name AS ""ProjectName"",
+                    floor_area AS ""FloorArea"",
+                    total_selling_price AS ""TotalSellingPrice"",
+                    selling_price_per_sqm AS ""CostPerSqm""
+                FROM public.""VW_PROJECT_OVERVIEW""
+                WHERE is_analytics_ready = TRUE
+                  AND selling_price_per_sqm IS NOT NULL
+                ORDER BY selling_price_per_sqm DESC";
 
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryAsync<CostPerSqmDto>(sql);
@@ -68,13 +63,13 @@ namespace YourQS.API.Repositories
         {
             const string sql = @"
                 SELECT
-                    jce.name AS ScopeName,
-                    SUM(jci.selling_price) AS OriginalCost
-                FROM public.job_cost_element jce
-                JOIN public.job_cost_item jci ON jci.job_cost_element_rec_id = jce.rec_id
-                WHERE jce.proj_master_rec_id = @ProjectId
-                  AND LOWER(jce.name) = LOWER(@ScopeName)
-                GROUP BY jce.name";
+                    jce.""NAME"" AS ScopeName,
+                    SUM(jci.""SELLING_PRICE"") AS OriginalCost
+                FROM public.""JOB_COST_ELEMENT"" jce
+                JOIN public.""JOB_COST_ITEM"" jci ON jci.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                WHERE jce.""PROJ_MASTER_REC_ID"" = @ProjectId
+                  AND LOWER(jce.""NAME"") = LOWER(@ScopeName)
+                GROUP BY jce.""NAME""";
 
             using var connection = _connectionFactory.CreateConnection();
             var result = await connection.QueryFirstOrDefaultAsync<dynamic>(

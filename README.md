@@ -1,4 +1,4 @@
-![Logo](https://media.discordapp.net/attachments/1224623887505952819/1532005280190304266/content.png?ex=6a6b469a&is=6a69f51a&hm=1ce9e95d45a06184b2cd4bfc33a41a2f5ce682fd9576860bc83207fc92e5e3f9&=&format=webp&quality=lossless)
+![Logo](https://media.discordapp.net/attachments/1224623887505952819/1532005280190304266/content.png?ex=6a8a41da&is=6a88f05a&hm=17a9da582d3e15c4f603b568b3f4436fff828124ed6ef07b34ee073361235967&=&format=webp&quality=lossless)
 
 
 

@@ -1,0 +1,45 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.local
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Logs and testing
+*.log
+.pytest_cache/
+htmlcov/
+.coverage
+
+
+.ipynb_checkpoints
+.mypy_cache
+.
+__pycache__
+
+
+docs_build
+site_build
+docs.zip
+archive.zip
+
+# vim temporary files
+.*.sw?
+.cache
+
+# macOS
+.DS_Store
+
+.codspeed

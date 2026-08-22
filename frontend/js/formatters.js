@@ -1,0 +1,83 @@
+/**
+ * formatters.js
+ * Pure display-formatting helpers. No business calculations live here —
+ * every numeric value has already been computed by the API.
+ */
+
+const NZD_FORMATTER = new Intl.NumberFormat("en-NZ", {
+  style: "currency",
+  currency: "NZD",
+  maximumFractionDigits: 0
+});
+
+const NZD_FORMATTER_PRECISE = new Intl.NumberFormat("en-NZ", {
+  style: "currency",
+  currency: "NZD",
+  maximumFractionDigits: 2
+});
+
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-NZ");
+
+const Formatters = {
+  /** Format a value as NZD currency. Returns "N/A" for null/undefined/NaN. */
+  currency(value, { precise = false } = {}) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    return precise
+      ? NZD_FORMATTER_PRECISE.format(value)
+      : NZD_FORMATTER.format(value);
+  },
+
+  /** Format a value as a percentage string, e.g. 26.47 -> "26.47%". */
+  percent(value, fractionDigits = 1) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    return `${Number(value).toFixed(fractionDigits)}%`;
+  },
+
+  /** Format a floor area in square metres. */
+  area(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    return `${NUMBER_FORMATTER.format(value)} m\u00B2`;
+  },
+
+  /** Format a plain integer count (levels, bathrooms). */
+  count(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    return NUMBER_FORMATTER.format(value);
+  },
+
+  /** Generic fallback for any value that might be missing. */
+  orNA(value) {
+    if (value === null || value === undefined || value === "") {
+      return "N/A";
+    }
+    return String(value);
+  },
+
+  /**
+   * Map the API-supplied readiness flags to a status label + status key.
+   * The API decides what "ready" means; this only chooses copy/styling.
+   */
+  status({ isAnalyticsReady, hasCostData, hasValidFloorArea }) {
+    if (isAnalyticsReady) {
+      return { key: "ready", label: "Analytics ready" };
+    }
+    if (!hasCostData && !hasValidFloorArea) {
+      return { key: "limited", label: "Limited data" };
+    }
+    if (!hasCostData) {
+      return { key: "missing-cost", label: "Missing cost data" };
+    }
+    if (!hasValidFloorArea) {
+      return { key: "missing-area", label: "Missing floor area" };
+    }
+    return { key: "limited", label: "Limited data" };
+  }
+};

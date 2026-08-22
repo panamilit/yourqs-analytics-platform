@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Overview - YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">YourQS</span>
+          <span class="sidebar-brand-sub">Analytics Platform</span>
+        </div>
+      </div>
+
+      <nav aria-label="Primary">
+        <ul class="sidebar-nav">
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-active" aria-current="page"><span class="nav-label">Projects</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Project Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Benchmarking</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Compare Projects</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">What-if Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v 1.0</div>
+    </aside>
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <img class="header-brand-logo" src="logo.webp" alt="YourQS logo" />
+      </div>
+      <div class="header-meta">
+        <div class="header-org">
+          <div class="header-org-avatar" aria-hidden="true">?</div>
+          <span>Login</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="app-main">
+      <div class="page-heading">
+        <h1>Projects Overview</h1>
+        <p>Explore and analyse historical YourQS projects.</p>
+      </div>
+
+      <!-- Summary cards -->
+      <section class="summary-cards" aria-label="Project summary">
+        <div class="summary-card">
+          <div class="summary-card-label">Total Projects</div>
+          <div class="summary-card-value is-loading" id="summary-total">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-label">Projects with Cost Data</div>
+          <div class="summary-card-value is-loading" id="summary-cost-data">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-label">Analytics-ready Projects</div>
+          <div class="summary-card-value is-loading" id="summary-analytics-ready">—</div>
+        </div>
+      </section>
+      <p id="summary-state" class="summary-state" role="alert" hidden></p>
+
+      <!-- Filters -->
+      <section class="filters-panel" aria-label="Filters">
+        <form id="filters-form">
+          <div class="filters-grid">
+            <div class="field field-search">
+              <label for="filter-search">Search by project name</label>
+              <input type="text" id="filter-search" name="search" placeholder="e.g. Carrie St, Sandringham" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="filter-min-area">Min floor area (m²)</label>
+              <input type="number" id="filter-min-area" name="minFloorArea" min="0" step="1" placeholder="No minimum" />
+            </div>
+
+            <div class="field">
+              <label for="filter-max-area">Max floor area (m²)</label>
+              <input type="number" id="filter-max-area" name="maxFloorArea" min="0" step="1" placeholder="No maximum" />
+            </div>
+
+            <div class="field">
+              <label for="filter-levels">Number of levels</label>
+              <input type="number" id="filter-levels" name="levels" min="0" step="1" placeholder="Any" />
+            </div>
+
+            <div class="field">
+              <label for="filter-cost-data">Cost data</label>
+              <select id="filter-cost-data" name="hasCostData">
+                <option value="">All</option>
+                <option value="true">Available</option>
+                <option value="false">Not available</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="filter-analytics-ready">Analytics readiness</label>
+              <select id="filter-analytics-ready" name="analyticsReady">
+                <option value="">All</option>
+                <option value="true">Ready</option>
+                <option value="false">Not ready</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="filter-sort-by">Sort by</label>
+              <select id="filter-sort-by" name="sortBy"></select>
+            </div>
+
+            <div class="field">
+              <label for="filter-sort-order">Sort direction</label>
+              <select id="filter-sort-order" name="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filters-actions">
+            <button type="button" class="btn btn-secondary" id="clear-filters-btn">Clear Filters</button>
+            <span class="filter-loading-badge" id="filter-loading-badge" hidden>
+              <span class="spinner" aria-hidden="true"></span>
+              Updating results…
+            </span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results -->
+      <section class="results-region" id="results-region" aria-label="Projects table" aria-live="polite">
+        <div class="ui-state" id="state-loading">
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="ui-state-title">Loading projects…</div>
+        </div>
+
+        <div class="ui-state" id="state-error" role="alert" hidden>
+          <div class="ui-state-title">Couldn't load projects</div>
+          <p class="ui-state-body" id="state-error-message">Something went wrong while contacting the server.</p>
+          <button type="button" class="btn btn-primary" id="retry-btn">Retry</button>
+        </div>
+
+        <div class="ui-state" id="state-empty" hidden>
+          <div class="ui-state-title">No projects yet</div>
+          <p class="ui-state-body">There are no historical projects on record for YourQS at the moment.</p>
+        </div>
+
+        <div class="ui-state" id="state-no-match" hidden>
+          <div class="ui-state-title">No projects match these filters</div>
+          <p class="ui-state-body">Try widening the floor area range, changing the readiness filters, or clearing filters entirely.</p>
+        </div>
+
+        <div class="table-wrapper" id="table-wrapper" hidden>
+          <table class="projects-table">
+            <thead>
+              <tr>
+                <th scope="col">Project name</th>
+                <th scope="col" class="col-numeric">Floor area</th>
+                <th scope="col" class="col-numeric">Levels</th>
+                <th scope="col" class="col-numeric">Bathrooms</th>
+                <th scope="col" class="col-numeric">Total cost</th>
+                <th scope="col" class="col-numeric">Selling price</th>
+                <th scope="col" class="col-numeric">Margin</th>
+                <th scope="col" class="col-numeric">Price / m²</th>
+                <th scope="col">Status</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="projects-table-body"></tbody>
+          </table>
+
+          <div class="pagination-bar">
+            <div class="pagination-left">
+              <span id="result-count">0 results</span>
+              <div class="page-size-field">
+                <label for="page-size-select">Rows per page</label>
+                <select id="page-size-select"></select>
+              </div>
+            </div>
+            <div class="pagination-right">
+              <button type="button" class="btn btn-secondary btn-sm" id="prev-page-btn">Previous</button>
+              <div class="page-numbers" id="page-numbers"></div>
+              <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="next-page-btn">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/dev-fallback-data.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

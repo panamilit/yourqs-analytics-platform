@@ -12,6 +12,16 @@ from app.schemas.projects import (
 )
 from app.services.projects_service import ProjectsService
 
+from app.repositories.project_details_repository import (
+    ProjectDetailsRepository,
+)
+from app.schemas.project_details import (
+    ProjectDetailsResponse,
+)
+from app.services.project_details_service import (
+    ProjectDetailsService,
+)
+
 
 router = APIRouter(
     prefix="/api/projects",
@@ -20,6 +30,11 @@ router = APIRouter(
 
 repository = ProjectsRepository()
 service = ProjectsService(repository)
+
+details_repository = ProjectDetailsRepository()
+details_service = ProjectDetailsService(
+    details_repository
+)
 
 
 @router.get(
@@ -96,4 +111,17 @@ def get_projects(
         page_size=page_size,
         sort_by=sort_by,
         sort_order=sort_order,
+    )
+
+
+@router.get(
+    "/{project_id}/details",
+    response_model=ProjectDetailsResponse,
+    response_model_by_alias=True,
+)
+def get_project_details(
+    project_id: str,
+) -> ProjectDetailsResponse:
+    return details_service.get_project_details(
+        project_id
     )

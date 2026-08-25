@@ -6,7 +6,12 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   initSidebarNav();
-  ProjectsPage.init();
+  if (typeof ProjectsPage !== "undefined") {
+    ProjectsPage.init();
+  }
+  if (typeof ProjectDetailsPage !== "undefined") {
+    ProjectDetailsPage.init();
+  }
 });
 
 function initSidebarNav() {

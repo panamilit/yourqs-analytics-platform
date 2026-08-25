@@ -320,6 +320,13 @@ const ProjectsPage = (() => {
         `;
       })
       .join("");
+
+    els.tableBody.querySelectorAll("[data-project-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const projectId = btn.getAttribute("data-project-id");
+        window.location.href = `project.html?id=${encodeURIComponent(projectId)}`;
+      });
+    });
   }
 
   function renderPagination(data) {

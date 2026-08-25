@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Analysis — YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-mark" aria-hidden="true">QS</div>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">YourQS</span>
+          <span class="sidebar-brand-sub">Analytics</span>
+        </div>
+      </div>
+
+      <nav aria-label="Primary">
+        <ul class="sidebar-nav">
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="index.html" data-nav><span class="nav-label">Projects</span></a></li>
+          <li><a href="#" data-nav class="is-active is-disabled" tabindex="-1" aria-current="page"><span class="nav-label">Project Analysis</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Benchmarking</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Compare Projects</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">What-if Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build</div>
+    </aside>
+
+    <!-- Header -->
+    <header class="app-header">
+      <span class="header-title">Project Analysis</span>
+      <div class="header-meta">
+        <div class="header-org">
+          <div class="header-org-avatar" aria-hidden="true">NZ</div>
+          <span>YourQS Ltd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="app-main">
+      <a class="back-link" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Back to Projects
+      </a>
+
+      <div class="page-heading detail-heading">
+        <h1>Project Analysis</h1>
+        <p class="page-heading-name" id="detail-project-name">Loading project…</p>
+      </div>
+
+      <!-- UI states -->
+      <div aria-live="polite">
+        <div class="panel ui-state" id="detail-state-loading">
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="ui-state-title">Loading project details…</div>
+        </div>
+
+        <div class="panel ui-state" id="detail-state-missing-id" hidden>
+          <div class="ui-state-title">No project selected</div>
+          <p class="ui-state-body">This page needs a project id in the URL. Head back to Projects and choose a project to analyse.</p>
+          <a class="btn btn-primary" href="index.html">Back to Projects</a>
+        </div>
+
+        <div class="panel ui-state" id="detail-state-not-found" hidden>
+          <div class="ui-state-title">Project not found</div>
+          <p class="ui-state-body">We couldn't find a project matching this id. It may have been removed, or the link may be incorrect.</p>
+          <a class="btn btn-primary" href="index.html">Back to Projects</a>
+        </div>
+
+        <div class="panel ui-state" id="detail-state-error" role="alert" hidden>
+          <div class="ui-state-title">Couldn't load this project</div>
+          <p class="ui-state-body" id="detail-error-message">Something went wrong while contacting the server.</p>
+          <button type="button" class="btn btn-primary" id="detail-retry-btn">Retry</button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div id="detail-content" hidden>
+        <!-- KPI cards -->
+        <section class="kpi-cards" aria-label="Project summary metrics">
+          <div class="summary-card">
+            <div class="summary-card-label">Total Cost</div>
+            <div class="summary-card-value" id="kpi-total-cost">—</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Selling Price</div>
+            <div class="summary-card-value" id="kpi-selling-price">—</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Margin</div>
+            <div class="summary-card-value" id="kpi-margin">—</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Selling Price / m²</div>
+            <div class="summary-card-value" id="kpi-price-per-sqm">—</div>
+          </div>
+        </section>
+
+        <!-- Project information -->
+        <section class="panel panel-section" aria-label="Project information">
+          <h2 class="panel-title">Project Information</h2>
+          <div class="info-grid" id="info-grid"></div>
+        </section>
+
+        <!-- Top cost drivers -->
+        <section class="panel panel-section" id="drivers-panel" aria-label="Top cost drivers">
+          <h2 class="panel-title">Top Cost Drivers</h2>
+          <p class="panel-subtitle">The scopes contributing most to this project's total cost.</p>
+          <ul class="driver-list" id="driver-list"></ul>
+          <div class="ui-state" id="drivers-empty" hidden>
+            <div class="ui-state-title">No cost driver data</div>
+            <p class="ui-state-body">This project doesn't have enough cost data to identify top drivers yet.</p>
+          </div>
+        </section>
+
+        <!-- Cost breakdown by scope -->
+        <section class="panel panel-section" id="breakdown-panel" aria-label="Cost breakdown by scope">
+          <h2 class="panel-title">Cost Breakdown by Scope</h2>
+          <p class="panel-subtitle">All cost scopes recorded against this project.</p>
+
+          <div class="ui-state" id="breakdown-empty" hidden>
+            <div class="ui-state-title">No cost breakdown available</div>
+            <p class="ui-state-body">This project doesn't have scope-level cost data yet.</p>
+          </div>
+
+          <div id="breakdown-charts">
+            <div class="charts-grid">
+              <div class="panel" aria-label="Top 10 cost scopes">
+                <h3 class="panel-title panel-title-sm">Top 10 Cost Scopes</h3>
+                <div class="bar-chart" id="bar-chart"></div>
+              </div>
+
+              <div class="panel donut-panel" aria-label="Cost distribution, top 8 scopes plus other">
+                <h3 class="panel-title panel-title-sm">Cost Distribution</h3>
+                <div class="donut-wrapper">
+                  <div class="donut" id="donut"></div>
+                  <div class="donut-center">
+                    <span class="donut-center-label">Total Cost</span>
+                    <span class="donut-center-value" id="donut-center-value">—</span>
+                  </div>
+                  <div class="donut-tooltip" id="donut-tooltip" role="tooltip" hidden></div>
+                </div>
+                <ul class="donut-legend" id="donut-legend"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrapper breakdown-table-wrapper" id="breakdown-table-wrapper">
+            <table class="projects-table">
+              <thead>
+                <tr>
+                  <th scope="col">Scope</th>
+                  <th scope="col" class="col-numeric">Total Cost</th>
+                  <th scope="col" class="col-numeric">% of Project Cost</th>
+                </tr>
+              </thead>
+              <tbody id="breakdown-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/dev-fallback-data.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/project-details.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

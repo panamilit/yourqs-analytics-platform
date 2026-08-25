@@ -1,3 +1,10 @@
+/* ==========================================================================
+   YourQS Analytics — design tokens
+   Palette: deep navy ink + paper-neutral background + steel-teal accent.
+   Type: IBM Plex Sans for UI text, IBM Plex Mono for tabular figures —
+   a nod to survey instruments and measured data.
+   ========================================================================== */
+
 :root {
   /* Color */
   --color-bg: #f5f6f4;
@@ -48,6 +55,9 @@
   --header-height: 64px;
 }
 
+/* ==========================================================================
+   Reset & base
+   ========================================================================== */
 
 *,
 *::before,
@@ -107,6 +117,9 @@ select:focus-visible,
   border: 0;
 }
 
+/* ==========================================================================
+   App shell
+   ========================================================================== */
 
 .app-shell {
   display: grid;
@@ -142,6 +155,20 @@ select:focus-visible,
   flex-shrink: 0;
 }
 
+.sidebar-brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 13px;
+  flex-shrink: 0;
+}
 
 .sidebar-brand-text {
   display: flex;
@@ -255,24 +282,11 @@ select:focus-visible,
   padding: 0 var(--space-5);
 }
 
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+.header-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
 }
-
-.header-brand-logo {
-  width: 128px;
-  height: 128px;
-  object-fit: contain;
-  display: block;
-  border-radius: 0;
-  background: transparent;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-
 
 .header-meta {
   display: flex;
@@ -300,6 +314,17 @@ select:focus-visible,
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
+}
+
+.header-brand-logo {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  display: block;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* ---- Main ---- */
@@ -733,6 +758,446 @@ select:focus-visible,
 }
 
 /* ==========================================================================
+   Project Detail page
+   Reuses existing card, panel, table, button and status tokens/patterns.
+   ========================================================================== */
+
+/* Chart colour set: desaturated, business-appropriate, distinct from status
+   colours so charts never get mistaken for status signalling. */
+:root {
+  --chart-1: #2f7566;
+  --chart-2: #3e8c9e;
+  --chart-3: #6b7fa0;
+  --chart-4: #8c6e4e;
+  --chart-5: #a5691f;
+  --chart-6: #5b6472;
+  --chart-7: #7c9885;
+  --chart-8: #4a5a78;
+  --chart-other: #c9cdc7;
+}
+
+/* The current section's sidebar item can be both "active" (current page
+   context) and "disabled" (no standalone destination without a project id)
+   at once — keep the active styling on top in that case. */
+.sidebar-nav a.is-active.is-disabled {
+  color: var(--color-sidebar-text-active);
+  opacity: 1;
+  cursor: default;
+}
+
+.sidebar-nav a.is-active.is-disabled:hover {
+  background: var(--color-sidebar-bg-active);
+  color: var(--color-sidebar-text-active);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  margin-bottom: var(--space-4);
+}
+
+.back-link:hover {
+  color: var(--color-accent-dark);
+}
+
+.back-link svg {
+  flex-shrink: 0;
+}
+
+.detail-heading .page-heading-name {
+  margin-top: var(--space-1);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Generic card-style container, same visual language as .filters-panel */
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel + .panel,
+.panel-section + .panel-section {
+  margin-top: var(--space-5);
+}
+
+.panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-1);
+}
+
+.panel-title-sm {
+  font-size: 13.5px;
+  align-self: flex-start;
+}
+
+.panel-subtitle {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-4);
+}
+
+.panel-section {
+  margin-bottom: var(--space-5);
+}
+
+/* KPI cards */
+
+.kpi-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+/* Project information grid */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-item-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+}
+
+.info-item-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: var(--color-ink);
+}
+
+/* Top cost drivers */
+
+.driver-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.driver-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+}
+
+.driver-rank {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.driver-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.driver-figures {
+  flex-shrink: 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.driver-cost {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.driver-percent {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink-muted);
+}
+
+/* Charts layout */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+/* Bar chart (top 10 scopes) */
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 150px) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.bar-label {
+  font-size: 12.5px;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 999px;
+}
+
+.bar-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  min-width: 64px;
+  text-align: right;
+}
+
+/* Donut distribution chart */
+
+.donut-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.donut-wrapper {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  flex-shrink: 0;
+}
+
+.donut {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+}
+
+.donut-segment {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+}
+
+.donut-segment:hover,
+.donut-segment.is-active {
+  transform: scale(1.035);
+  filter: brightness(1.08);
+  z-index: 2;
+}
+
+.donut-segment:focus-visible {
+  outline: none;
+  transform: scale(1.035);
+  filter: brightness(1.08) drop-shadow(0 0 0 2px var(--color-accent));
+  z-index: 2;
+}
+
+.donut-segment.is-muted {
+  opacity: 0.55;
+}
+
+.donut-tooltip {
+  position: absolute;
+  z-index: 10;
+  min-width: 140px;
+  max-width: 200px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+
+.donut-tooltip[hidden] {
+  display: none;
+}
+
+.donut-tooltip-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+  margin-bottom: 2px;
+}
+
+.donut-tooltip-percent {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-accent-dark);
+  font-weight: 600;
+}
+
+.donut-tooltip-cost {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-ink-muted);
+}
+
+.donut-center {
+  position: absolute;
+  inset: 22%;
+  background: var(--color-surface);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  z-index: 3;
+}
+
+.donut-center-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+}
+
+.donut-center-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12.5px;
+  color: var(--color-ink);
+}
+
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend-figures {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+/* Full breakdown table */
+
+.breakdown-table-wrapper {
+  max-height: 560px;
+  overflow-y: auto;
+  margin-top: var(--space-5);
+}
+
+.breakdown-table-wrapper .projects-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Detail page ui-state variant sits inside a panel rather than the results
+   region, so it needs its own (smaller) padding. */
+.panel .ui-state {
+  padding: var(--space-6) var(--space-4);
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
@@ -762,6 +1227,12 @@ select:focus-visible,
     display: none;
   }
   .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  .kpi-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .charts-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -797,5 +1268,18 @@ select:focus-visible,
   .pagination-right {
     justify-content: center;
     flex-wrap: wrap;
+  }
+  .kpi-cards {
+    grid-template-columns: 1fr;
+  }
+  .info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bar-row {
+    grid-template-columns: 96px 1fr auto;
+  }
+  .donut-wrapper {
+    width: 140px;
+    height: 140px;
   }
 }

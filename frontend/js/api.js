@@ -41,6 +41,12 @@ const Api = {
     return this._request(url, { signal });
   },
 
+  /** GET /api/projects/{project_id}/details */
+  async getProjectDetails(projectId, { signal } = {}) {
+    const url = this.buildUrl(`/api/projects/${encodeURIComponent(projectId)}/details`);
+    return this._request(url, { signal });
+  },
+
   /** Shared fetch wrapper with consistent error handling. */
   async _request(url, { signal } = {}) {
     let response;

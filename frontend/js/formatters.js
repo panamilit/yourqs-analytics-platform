@@ -16,6 +16,13 @@ const NZD_FORMATTER_PRECISE = new Intl.NumberFormat("en-NZ", {
   maximumFractionDigits: 2
 });
 
+const NZD_FORMATTER_COMPACT = new Intl.NumberFormat("en-NZ", {
+  style: "currency",
+  currency: "NZD",
+  notation: "compact",
+  maximumFractionDigits: 1
+});
+
 const NUMBER_FORMATTER = new Intl.NumberFormat("en-NZ");
 
 const Formatters = {
@@ -27,6 +34,14 @@ const Formatters = {
     return precise
       ? NZD_FORMATTER_PRECISE.format(value)
       : NZD_FORMATTER.format(value);
+  },
+
+  /** Compact NZD currency for tight chart labels, e.g. 45126.99 -> "$45.1K". */
+  currencyCompact(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    return NZD_FORMATTER_COMPACT.format(value);
   },
 
   /** Format a value as a percentage string, e.g. 26.47 -> "26.47%". */

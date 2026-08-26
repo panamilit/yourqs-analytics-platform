@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace YourQS.API.DTOs
 {
     public class ProjectDto
@@ -71,5 +73,75 @@ namespace YourQS.API.DTOs
         public decimal ModifiedCost { get; set; }
         public decimal CostDifference { get; set; }
         public double ChangePercent { get; set; }
+    }
+
+    public class MaterialWhatIfRequestDto
+    {
+        [Required]
+        public string ProjectId { get; set; } = string.Empty;
+
+        [Required]
+        public string ModelId { get; set; } = string.Empty;
+
+        [Required]
+        public string ScenarioType { get; set; } = string.Empty;
+
+        [Required]
+        public string ScopeName { get; set; } = string.Empty;
+
+        [Required]
+        public string OriginalMaterial { get; set; } = string.Empty;
+
+        [Required]
+        public string ReplacementMaterial { get; set; } = string.Empty;
+
+        [Range(typeof(decimal), "0", "1000000")]
+        public decimal ReplacementUnitRate { get; set; }
+    }
+
+    public class MaterialWhatIfDto
+    {
+        public string ProjectId { get; set; } = string.Empty;
+        public string ModelId { get; set; } = string.Empty;
+        public string ModelName { get; set; } = string.Empty;
+        public string ScenarioType { get; set; } = string.Empty;
+        public string ScopeName { get; set; } = string.Empty;
+        public string OriginalMaterial { get; set; } = string.Empty;
+        public string ReplacementMaterial { get; set; } = string.Empty;
+        public string MeasureUnit { get; set; } = "m2";
+        public decimal AffectedQuantity { get; set; }
+        public decimal OriginalUnitRate { get; set; }
+        public decimal ReplacementUnitRate { get; set; }
+        public decimal OriginalAffectedCost { get; set; }
+        public decimal ModifiedAffectedCost { get; set; }
+        public decimal OriginalProjectTotal { get; set; }
+        public decimal ModifiedProjectTotal { get; set; }
+        public decimal CostDifference { get; set; }
+        public decimal ChangePercent { get; set; }
+    }
+
+    public class WhatIfCostInputsDto
+    {
+        public string ProjectId { get; set; } = string.Empty;
+        public string ModelId { get; set; } = string.Empty;
+        public string ModelName { get; set; } = string.Empty;
+        public decimal? AffectedQuantity { get; set; }
+        public decimal OriginalAffectedCost { get; set; }
+        public decimal OriginalProjectTotal { get; set; }
+        public int ScopeItemCount { get; set; }
+    }
+
+    public class WhatIfCalculationOutcome
+    {
+        public MaterialWhatIfDto? Result { get; init; }
+        public string? ErrorCode { get; init; }
+        public string? ErrorMessage { get; init; }
+        public bool IsSuccess => Result is not null;
+
+        public static WhatIfCalculationOutcome Success(MaterialWhatIfDto result) =>
+            new() { Result = result };
+
+        public static WhatIfCalculationOutcome Failure(string code, string message) =>
+            new() { ErrorCode = code, ErrorMessage = message };
     }
 }

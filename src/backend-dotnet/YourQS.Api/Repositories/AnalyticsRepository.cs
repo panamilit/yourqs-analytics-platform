@@ -63,10 +63,11 @@ namespace YourQS.API.Repositories
         {
             const string sql = @"
                 SELECT
-                    jce.""NAME"" AS ScopeName,
-                    SUM(jci.""SELLING_PRICE"") AS OriginalCost
+                    jce.""NAME"" AS ""ScopeName"",
+                    SUM(jci.""SELLING_PRICE"") AS ""OriginalCost""
                 FROM public.""JOB_COST_ELEMENT"" jce
-                JOIN public.""JOB_COST_ITEM"" jci ON jci.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                JOIN public.""JOB_COST_ITEM"" jci
+                  ON jci.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
                 WHERE jce.""PROJ_MASTER_REC_ID"" = @ProjectId
                   AND LOWER(jce.""NAME"") = LOWER(@ScopeName)
                 GROUP BY jce.""NAME""";
@@ -77,17 +78,90 @@ namespace YourQS.API.Repositories
 
             if (result == null) return null;
 
-            decimal original = (decimal)result.originalcost;
+            decimal original = (decimal)result.OriginalCost;
             decimal modified = original * (1 + (decimal)(changePercent / 100.0));
 
             return new WhatIfDto
             {
-                ScopeName      = result.scopename,
+                ScopeName      = result.ScopeName,
                 OriginalCost   = original,
                 ModifiedCost   = modified,
                 CostDifference = modified - original,
                 ChangePercent  = changePercent
             };
+        }
+
+        public async Task<WhatIfCostInputsDto?> GetWhatIfCostInputsAsync(
+            string projectId,
+            string modelId,
+            string scopeName,
+            string scenarioType)
+        {
+            const string sql = @"
+                WITH selected_model AS (
+                    SELECT
+                        pma.""PROJ_MASTER_REC_ID"" AS ""ProjectId"",
+                        pma.""REC_ID"" AS ""ModelId"",
+                        pma.""PROJ_MODEL_HEADER_REC_ID"" AS ""ModelHeaderId"",
+                        pma.""MODEL_NAME"" AS ""ModelName"",
+                        CASE
+                            WHEN @ScenarioType = 'floor' THEN pma.""FLOOR_AREA""
+                            WHEN @ScenarioType = 'wall-cladding' THEN pma.""EXT_WALL_AREA""
+                        END AS ""AffectedQuantity""
+                    FROM public.""PROJ_MODEL_ATTRIBUTES"" pma
+                    WHERE pma.""REC_ID"" = @ModelId
+                      AND pma.""PROJ_MASTER_REC_ID"" = @ProjectId
+                )
+                SELECT
+                    sm.""ProjectId"",
+                    sm.""ModelId"",
+                    sm.""ModelName"",
+                    sm.""AffectedQuantity"",
+                    COALESCE((
+                        SELECT SUM(jci.""SELLING_PRICE"")
+                        FROM public.""JOB_COST_ELEMENT"" jce
+                        JOIN public.""JOB_COST_ITEM"" jci
+                          ON jci.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                        WHERE jce.""PROJ_MASTER_REC_ID"" = sm.""ProjectId""
+                          AND LOWER(jce.""NAME"") = LOWER(@ScopeName)
+                          AND EXISTS (
+                              SELECT 1
+                              FROM public.""PROJ_MODEL_FAMILY_ATTRIBUTES"" pmfa
+                              WHERE pmfa.""PROJ_MODEL_HEADER_REC_ID"" = sm.""ModelHeaderId""
+                                AND pmfa.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                          )
+                    ), 0) AS ""OriginalAffectedCost"",
+                    COALESCE((
+                        SELECT SUM(jci.""SELLING_PRICE"")
+                        FROM public.""JOB_COST_ELEMENT"" jce
+                        JOIN public.""JOB_COST_ITEM"" jci
+                          ON jci.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                        WHERE jce.""PROJ_MASTER_REC_ID"" = sm.""ProjectId""
+                    ), 0) AS ""OriginalProjectTotal"",
+                    (
+                        SELECT COUNT(*)
+                        FROM public.""JOB_COST_ELEMENT"" jce
+                        JOIN public.""JOB_COST_ITEM"" jci
+                          ON jci.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                        WHERE jce.""PROJ_MASTER_REC_ID"" = sm.""ProjectId""
+                          AND LOWER(jce.""NAME"") = LOWER(@ScopeName)
+                          AND EXISTS (
+                              SELECT 1
+                              FROM public.""PROJ_MODEL_FAMILY_ATTRIBUTES"" pmfa
+                              WHERE pmfa.""PROJ_MODEL_HEADER_REC_ID"" = sm.""ModelHeaderId""
+                                AND pmfa.""JOB_COST_ELEMENT_REC_ID"" = jce.""REC_ID""
+                          )
+                    )::integer AS ""ScopeItemCount""
+                FROM selected_model sm";
+
+            using var connection = _connectionFactory.CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<WhatIfCostInputsDto>(sql, new
+            {
+                ProjectId = projectId,
+                ModelId = modelId,
+                ScopeName = scopeName,
+                ScenarioType = scenarioType
+            });
         }
     }
 }

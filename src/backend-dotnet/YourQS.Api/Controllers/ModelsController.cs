@@ -17,7 +17,6 @@ public class ModelsController : ControllerBase
         _costRepository = costRepository;
     }
 
-    /// <summary>GET /api/projects/{projectId}/model-attributes: BIM measurements for a project</summary>
     [HttpGet("model-attributes")]
     public async Task<IActionResult> GetModelAttributes(string projectId)
     {
@@ -25,7 +24,6 @@ public class ModelsController : ControllerBase
         return Ok(attributes);
     }
 
-    /// <summary>GET /api/projects/{projectId}/cost-breakdown/scope: cost breakdown by scope</summary>
     [HttpGet("cost-breakdown/scope")]
     public async Task<IActionResult> GetCostBreakdownByScope(string projectId)
     {

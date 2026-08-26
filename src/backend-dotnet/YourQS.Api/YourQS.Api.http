@@ -65,3 +65,19 @@ Accept: application/json
 ### Invalid request — should return HTTP 422
 GET {{HostAddress}}/api/projects/overview?page=0&page_size=101&sort_by=invalid
 Accept: application/json
+
+###
+
+### Material what-if: replace a timber floor with concrete at $185/m2
+POST {{HostAddress}}/api/analytics/what-if
+Content-Type: application/json
+
+{
+  "projectId": "8D32E6AC-59E4-4253-82D3-82E30B88A171",
+  "modelId": "MODEL-REC-ID",
+  "scenarioType": "floor",
+  "scopeName": "Floor Structure",
+  "originalMaterial": "Timber",
+  "replacementMaterial": "Concrete",
+  "replacementUnitRate": 185.00
+}

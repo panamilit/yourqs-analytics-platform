@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using YourQS.API.DTOs;
 using YourQS.API.Repositories.Interfaces;
+using YourQS.API.Services.Interfaces;
 
 namespace YourQS.API.Controllers
 {
@@ -8,13 +10,16 @@ namespace YourQS.API.Controllers
     public class AnalyticsController : ControllerBase
     {
         private readonly IAnalyticsRepository _analyticsRepository;
+        private readonly IWhatIfService _whatIfService;
 
-        public AnalyticsController(IAnalyticsRepository analyticsRepository)
+        public AnalyticsController(
+            IAnalyticsRepository analyticsRepository,
+            IWhatIfService whatIfService)
         {
             _analyticsRepository = analyticsRepository;
+            _whatIfService = whatIfService;
         }
 
-        /// <summary>GET /api/analytics/cost-per-sqm — cost per m² for all projects</summary>
         [HttpGet("cost-per-sqm")]
         public async Task<IActionResult> GetCostPerSqm()
         {
@@ -22,7 +27,6 @@ namespace YourQS.API.Controllers
             return Ok(results);
         }
 
-        /// <summary>GET /api/analytics/benchmark/{projectId} — compare project cost vs dataset average, flags if >±20%</summary>
         [HttpGet("benchmark/{projectId}")]
         public async Task<IActionResult> GetBenchmark(string projectId)
         {
@@ -31,7 +35,6 @@ namespace YourQS.API.Controllers
             return Ok(result);
         }
 
-        /// <summary>GET /api/analytics/whatif/{projectId}?scopeName=Concrete&changePercent=10 — simulate a cost change</summary>
         [HttpGet("whatif/{projectId}")]
         public async Task<IActionResult> GetWhatIf(
             string projectId,
@@ -41,6 +44,33 @@ namespace YourQS.API.Controllers
             var result = await _analyticsRepository.GetWhatIfAsync(projectId, scopeName, changePercent);
             if (result == null) return NotFound();
             return Ok(result);
+        }
+
+        [HttpPost("what-if")]
+        [ProducesResponseType(typeof(MaterialWhatIfDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> CalculateMaterialWhatIf(
+            [FromBody] MaterialWhatIfRequestDto request)
+        {
+            var outcome = await _whatIfService.CalculateAsync(request);
+
+            if (outcome.IsSuccess)
+            {
+                return Ok(outcome.Result);
+            }
+
+            var problem = new ProblemDetails
+            {
+                Title = "What-if simulation could not be calculated",
+                Detail = outcome.ErrorMessage,
+                Status = outcome.ErrorCode == "model_not_found"
+                    ? StatusCodes.Status404NotFound
+                    : StatusCodes.Status422UnprocessableEntity
+            };
+            problem.Extensions["code"] = outcome.ErrorCode;
+
+            return StatusCode(problem.Status.Value, problem);
         }
     }
 }

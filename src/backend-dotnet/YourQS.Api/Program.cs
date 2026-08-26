@@ -22,6 +22,7 @@ builder.Services.AddScoped<IProjectOverviewRepository, ProjectOverviewRepository
 
 // Services
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IWhatIfService, WhatIfService>();
 
 var app = builder.Build();
 

@@ -14,7 +14,6 @@ namespace YourQS.API.Controllers
             _projectService = projectService;
         }
 
-        /// <summary>GET /api/projects — returns all projects</summary>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,7 +21,6 @@ namespace YourQS.API.Controllers
             return Ok(projects);
         }
 
-        /// <summary>GET /api/projects/{id} — returns a single project</summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {

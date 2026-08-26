@@ -1,8 +1,5 @@
 namespace YourQS.API.Models
 {
-    /// <summary>
-    /// Maps to PROJ_MODEL_ATTRIBUTES - measurements and quantities per model element.
-    /// </summary>
     public class ModelAttributes
     {
         public string REC_ID { get; set; } = string.Empty;

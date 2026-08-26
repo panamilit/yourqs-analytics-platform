@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmarking — YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img class="header-brand-logo" src="assets/yourqs.png" alt="YourQS logo"/>
+      </div>
+
+      <nav aria-label="Primary">
+        <ul class="sidebar-nav">
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="index.html" data-nav><span class="nav-label">Projects</span></a></li>
+          <li><a href="#" data-nav id="nav-project-analysis-link"><span class="nav-label">Project Analysis</span></a></li>
+          <li><a href="#" data-nav class="is-active is-disabled" tabindex="-1" aria-current="page"><span class="nav-label">Benchmarking</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Compare Projects</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">What-if Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v 1.3</div>
+    </aside>
+
+    <!-- Header -->
+    <header class="app-header">
+      <span class="header-title">Benchmarking</span>
+      <div class="header-meta">
+        <div class="header-org">
+          <div class="header-org-avatar" aria-hidden="true">NZ</div>
+          <span>YourQS Ltd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="app-main">
+      <a class="back-link" href="index.html" id="bm-back-link">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Back to Project Analysis
+      </a>
+
+      <div class="page-heading detail-heading">
+        <h1>Benchmarking</h1>
+        <p class="page-heading-name" id="bm-project-name">Loading project…</p>
+        <p>Compare this project's construction cost with historical YourQS projects.</p>
+      </div>
+
+      <!-- UI states -->
+      <div aria-live="polite">
+        <div class="panel ui-state" id="bm-state-loading">
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="ui-state-title">Loading benchmark data…</div>
+        </div>
+
+        <div class="panel ui-state" id="bm-state-missing-id" hidden>
+          <div class="ui-state-title">No project selected</div>
+          <p class="ui-state-body">This page needs a project id in the URL. Head back to Projects and choose a project to benchmark.</p>
+          <a class="btn btn-primary" href="index.html">Back to Projects</a>
+        </div>
+
+        <div class="panel ui-state" id="bm-state-not-found" hidden>
+          <div class="ui-state-title">Project not found</div>
+          <p class="ui-state-body">We couldn't find a project matching this id. It may have been removed, or the link may be incorrect.</p>
+          <a class="btn btn-primary" href="index.html">Back to Projects</a>
+        </div>
+
+        <div class="panel ui-state" id="bm-state-insufficient" hidden>
+          <div class="ui-state-title">Not enough data to benchmark this project</div>
+          <p class="ui-state-body">This project doesn't have enough cost and floor area data yet to compare it against the benchmark dataset.</p>
+          <a class="btn btn-primary" id="bm-insufficient-back-link" href="index.html">Back to Project Analysis</a>
+        </div>
+
+        <div class="panel ui-state" id="bm-state-error" role="alert" hidden>
+          <div class="ui-state-title">Couldn't load benchmark data</div>
+          <p class="ui-state-body" id="bm-error-message">Something went wrong while contacting the server.</p>
+          <button type="button" class="btn btn-primary" id="bm-retry-btn">Retry</button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div id="bm-content" hidden>
+        <!-- Primary benchmark KPI cards -->
+        <section class="kpi-cards-3" aria-label="Benchmark summary metrics">
+          <div class="summary-card">
+            <div class="summary-card-label">Project Cost / m²</div>
+            <div class="summary-card-value" id="bm-kpi-project">—</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Dataset Median</div>
+            <div class="summary-card-value" id="bm-kpi-median">—</div>
+            <div class="summary-card-sub" id="bm-kpi-median-variance"></div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Dataset Average</div>
+            <div class="summary-card-value" id="bm-kpi-average">—</div>
+            <div class="summary-card-sub" id="bm-kpi-average-variance"></div>
+          </div>
+        </section>
+
+        <!-- Cost Position -->
+        <section class="panel panel-section" aria-label="Cost position">
+          <h2 class="panel-title">Cost Position</h2>
+          <div class="position-banner">
+            <span class="position-badge" id="bm-position-badge">—</span>
+            <span class="position-percentile" id="bm-position-percentile">—</span>
+          </div>
+          <p class="panel-subtitle" id="bm-position-explanation"></p>
+
+          <div class="percentile-scale">
+            <div class="percentile-track" id="bm-percentile-track">
+              <span class="percentile-zone is-favorable"></span>
+              <span class="percentile-zone is-neutral"></span>
+              <span class="percentile-zone is-caution"></span>
+              <span class="percentile-zone is-critical"></span>
+              <span class="percentile-marker" id="bm-percentile-marker">
+                <span class="percentile-marker-label" id="bm-percentile-marker-label">—</span>
+              </span>
+            </div>
+            <div class="percentile-legend" aria-hidden="true">
+              <span>Very Low</span>
+              <span>Below Typical</span>
+              <span>Typical</span>
+              <span>Above Typical</span>
+              <span>High</span>
+              <span>Extreme</span>
+            </div>
+            <p class="percentile-description" id="bm-percentile-description"></p>
+          </div>
+        </section>
+
+        <!-- Benchmark Value Comparison -->
+        <section class="panel panel-section" aria-label="Benchmark value comparison">
+          <h2 class="panel-title">Benchmark Value Comparison</h2>
+          <p class="panel-subtitle">This project's cost per m² against the dataset median and average.</p>
+          <div class="bar-chart" id="bm-comparison-bars"></div>
+        </section>
+
+        <!-- Range + dataset info -->
+        <div class="charts-grid">
+          <section class="panel panel-section" aria-label="Benchmark range">
+            <h2 class="panel-title panel-title-sm">Benchmark Range</h2>
+            <div class="info-grid" id="bm-range-grid"></div>
+          </section>
+
+          <section class="panel panel-section" aria-label="Benchmark dataset information">
+            <h2 class="panel-title panel-title-sm">Benchmark Dataset</h2>
+            <div class="info-grid" id="bm-dataset-info-grid"></div>
+            <p class="panel-note">Extreme cost-per-square-metre values are excluded from benchmark statistics using statistical outlier filtering.</p>
+          </section>
+        </div>
+
+        <!-- Similar Projects -->
+        <section class="panel panel-section" aria-label="Similar projects">
+          <h2 class="panel-title">Similar Projects</h2>
+          <p class="panel-subtitle">Other YourQS projects with a comparable cost per square metre.</p>
+
+          <div class="ui-state" id="bm-similar-empty" hidden>
+            <div class="ui-state-title">No similar projects found</div>
+            <p class="ui-state-body">We couldn't find comparable projects for this benchmark.</p>
+          </div>
+
+          <div class="table-wrapper" id="bm-similar-table-wrapper">
+            <table class="projects-table">
+              <thead>
+                <tr>
+                  <th scope="col">Project</th>
+                  <th scope="col" class="col-numeric">Floor Area</th>
+                  <th scope="col" class="col-numeric">Levels</th>
+                  <th scope="col" class="col-numeric">Bathrooms</th>
+                  <th scope="col" class="col-numeric">Total Cost</th>
+                  <th scope="col" class="col-numeric">Cost / m²</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="bm-similar-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/dev-fallback-data.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/benchmarking.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

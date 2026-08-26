@@ -15,11 +15,7 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <div class="sidebar-brand-mark" aria-hidden="true">QS</div>
-        <div class="sidebar-brand-text">
-          <span class="sidebar-brand-name">YourQS</span>
-          <span class="sidebar-brand-sub">Analytics</span>
-        </div>
+        <img class="header-brand-logo" src="assets/yourqs.png" alt="YourQS logo"/>
       </div>
 
       <nav aria-label="Primary">
@@ -27,14 +23,14 @@
           <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
           <li><a href="index.html" data-nav><span class="nav-label">Projects</span></a></li>
           <li><a href="#" data-nav class="is-active is-disabled" tabindex="-1" aria-current="page"><span class="nav-label">Project Analysis</span></a></li>
-          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Benchmarking</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav id="nav-benchmarking-link"><span class="nav-label">Benchmarking</span></a></li>
           <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Compare Projects</span><span class="nav-soon">Soon</span></a></li>
           <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">What-if Analysis</span><span class="nav-soon">Soon</span></a></li>
           <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
         </ul>
       </nav>
 
-      <div class="sidebar-footer">YourQS Analytics<br />Internal build</div>
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v 1.3</div>
     </aside>
 
     <!-- Header -->
@@ -60,6 +56,10 @@
       <div class="page-heading detail-heading">
         <h1>Project Analysis</h1>
         <p class="page-heading-name" id="detail-project-name">Loading project…</p>
+      </div>
+
+      <div class="detail-actions">
+        <a class="btn btn-secondary btn-sm" id="view-benchmark-btn" href="#">View Benchmark</a>
       </div>
 
       <!-- UI states -->

@@ -10,6 +10,7 @@ from app.db.pool import (
     open_database_pool,
 )
 from app.routes.projects import router as projects_router
+from app.routes.benchmarking import router as benchmarking_router
 
 
 settings = get_settings()
@@ -38,6 +39,7 @@ app.add_middleware(
 
 app.include_router(projects_router)
 
+app.include_router(benchmarking_router)
 
 @app.get("/health", tags=["Health"])
 def health() -> dict[str, str]:

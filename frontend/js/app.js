@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof ProjectDetailsPage !== "undefined") {
     ProjectDetailsPage.init();
   }
+  if (typeof BenchmarkingPage !== "undefined") {
+    BenchmarkingPage.init();
+  }
 });
 
 function initSidebarNav() {

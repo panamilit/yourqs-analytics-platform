@@ -38,12 +38,18 @@ const ProjectDetailsPage = (() => {
       return;
     }
 
+    const benchmarkUrl = `benchmarking.html?id=${encodeURIComponent(projectId)}`;
+    els.viewBenchmarkBtn.href = benchmarkUrl;
+    els.navBenchmarkingLink.href = benchmarkUrl;
+
     loadDetails();
   }
 
   function cacheElements() {
     els = {
       pageProjectName: document.getElementById("detail-project-name"),
+      viewBenchmarkBtn: document.getElementById("view-benchmark-btn"),
+      navBenchmarkingLink: document.getElementById("nav-benchmarking-link"),
 
       stateLoading: document.getElementById("detail-state-loading"),
       stateMissingId: document.getElementById("detail-state-missing-id"),

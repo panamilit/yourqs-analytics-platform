@@ -25,6 +25,23 @@ const NZD_FORMATTER_COMPACT = new Intl.NumberFormat("en-NZ", {
 
 const NUMBER_FORMATTER = new Intl.NumberFormat("en-NZ");
 
+/** Standard English ordinal suffix (1st, 2nd, 3rd, 4th, 11th, 21st, ...). */
+function ordinalSuffix(n) {
+  const abs = Math.abs(n);
+  const mod100 = abs % 100;
+  if (mod100 >= 11 && mod100 <= 13) return "th";
+  switch (abs % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+}
+
 const Formatters = {
   /** Format a value as NZD currency. Returns "N/A" for null/undefined/NaN. */
   currency(value, { precise = false } = {}) {
@@ -50,6 +67,16 @@ const Formatters = {
       return "N/A";
     }
     return `${Number(value).toFixed(fractionDigits)}%`;
+  },
+
+  /** Format a percentile with its ordinal suffix, e.g. 37.617 -> "37.6th percentile". */
+  percentile(value, fractionDigits = 1) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    const num = Number(value);
+    const rounded = num.toFixed(fractionDigits);
+    return `${rounded}${ordinalSuffix(Math.trunc(num))} percentile`;
   },
 
   /** Format a floor area in square metres. */

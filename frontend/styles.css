@@ -148,11 +148,19 @@ select:focus-visible,
 .sidebar-brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   padding: 0 var(--space-4);
   height: var(--header-height);
   border-bottom: 1px solid var(--color-sidebar-border);
   flex-shrink: 0;
+}
+
+.sidebar-brand .header-brand-logo {
+  width: min(100%, 128px);
+  height: auto;
+  max-height: calc(var(--header-height) - var(--space-2));
+  object-fit: contain;
 }
 
 .sidebar-brand-mark {
@@ -282,6 +290,17 @@ select:focus-visible,
   padding: 0 var(--space-5);
 }
 
+.header-brand-logo {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  display: block;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .header-title {
   font-size: 14px;
   font-weight: 600;
@@ -314,17 +333,6 @@ select:focus-visible,
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
-}
-
-.header-brand-logo {
-  width: 128px;
-  height: 128px;
-  object-fit: contain;
-  display: block;
-  border-radius: 0;
-  background: transparent;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 /* ---- Main ---- */
@@ -816,6 +824,10 @@ select:focus-visible,
   color: var(--color-ink);
 }
 
+.detail-actions {
+  margin-bottom: var(--space-5);
+}
+
 /* Generic card-style container, same visual language as .filters-panel */
 .panel {
   background: var(--color-surface);
@@ -1198,6 +1210,219 @@ select:focus-visible,
 }
 
 /* ==========================================================================
+   Benchmarking page
+   Reuses .panel, .summary-card, .info-grid, .bar-chart and .projects-table
+   from the existing design system. Only genuinely new concepts — the
+   position badge and percentile scale — get new, restrained styling built
+   from the same 4-tier semantic palette already used for status badges.
+   ========================================================================== */
+
+.kpi-cards-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.summary-card-sub {
+  margin-top: var(--space-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.summary-card-sub.is-favorable {
+  color: var(--color-accent-dark);
+}
+
+.summary-card-sub.is-caution {
+  color: var(--color-warn);
+}
+
+.summary-card-sub.is-neutral {
+  color: var(--color-ink-muted);
+}
+
+/* Cost Position */
+
+.position-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.position-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.position-badge.is-favorable {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+}
+
+.position-badge.is-neutral {
+  background: var(--color-neutral-tint);
+  color: var(--color-ink-muted);
+}
+
+.position-badge.is-caution {
+  background: var(--color-warn-tint);
+  color: var(--color-warn);
+}
+
+.position-badge.is-critical {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+}
+
+.position-percentile {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Percentile scale */
+
+.percentile-scale {
+  margin-top: var(--space-4);
+}
+
+.percentile-track {
+  position: relative;
+  display: flex;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.percentile-zone {
+  display: inline-block;
+  height: 100%;
+}
+
+.percentile-zone.is-favorable {
+  background: var(--color-accent-tint);
+}
+
+.percentile-zone.is-neutral {
+  background: var(--color-neutral-tint);
+}
+
+.percentile-zone.is-caution {
+  background: var(--color-warn-tint);
+}
+
+.percentile-zone.is-critical {
+  background: var(--color-danger-tint);
+}
+
+.percentile-track .percentile-zone:nth-child(1) {
+  width: 40%;
+}
+
+.percentile-track .percentile-zone:nth-child(2) {
+  width: 20%;
+}
+
+.percentile-track .percentile-zone:nth-child(3) {
+  width: 35%;
+}
+
+.percentile-track .percentile-zone:nth-child(4) {
+  width: 5%;
+}
+
+.percentile-marker {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 2px;
+  background: var(--color-ink);
+  transform: translateX(-1px);
+}
+
+.percentile-marker-label {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.percentile-marker-label::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--color-ink);
+}
+
+.percentile-legend {
+  display: flex;
+  margin-top: var(--space-2);
+}
+
+.percentile-legend span {
+  font-size: 10.5px;
+  color: var(--color-ink-muted);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+
+.percentile-legend span:nth-child(1),
+.percentile-legend span:nth-child(2),
+.percentile-legend span:nth-child(3),
+.percentile-legend span:nth-child(4) {
+  width: 20%;
+}
+
+.percentile-legend span:nth-child(5) {
+  width: 15%;
+}
+
+.percentile-legend span:nth-child(6) {
+  width: 5%;
+}
+
+.percentile-description {
+  margin-top: var(--space-3);
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+}
+
+.panel-note {
+  margin-top: var(--space-3);
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+}
+
+/* Similar projects row actions */
+
+.row-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
@@ -1231,6 +1456,9 @@ select:focus-visible,
   }
   .kpi-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .kpi-cards-3 {
+    grid-template-columns: 1fr;
   }
   .charts-grid {
     grid-template-columns: 1fr;
@@ -1281,5 +1509,15 @@ select:focus-visible,
   .donut-wrapper {
     width: 140px;
     height: 140px;
+  }
+  .kpi-cards-3 {
+    grid-template-columns: 1fr;
+  }
+  .percentile-legend span:nth-child(5),
+  .percentile-legend span:nth-child(6) {
+    font-size: 9.5px;
+  }
+  .row-actions {
+    flex-direction: column;
   }
 }

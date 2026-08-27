@@ -52,9 +52,18 @@ const BenchmarkingPage = (() => {
     }
 
     const analysisUrl = `project.html?id=${encodeURIComponent(projectId)}`;
-    els.backLink.href = analysisUrl;
-    els.insufficientBackLink.href = analysisUrl;
-    els.navProjectAnalysisLink.href = analysisUrl;
+    
+    if (els.backLink) {
+      els.backLink.href = analysisUrl;
+    }
+
+    if (els.insufficientBackLink) {
+      els.insufficientBackLink.href = analysisUrl;
+    }
+
+    if (els.navProjectAnalysisLink) {
+      els.navProjectAnalysisLink.href = analysisUrl;
+    }
 
     loadBenchmark();
   }

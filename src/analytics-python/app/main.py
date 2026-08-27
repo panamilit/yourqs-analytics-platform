@@ -11,7 +11,7 @@ from app.db.pool import (
 )
 from app.routes.projects import router as projects_router
 from app.routes.benchmarking import router as benchmarking_router
-
+from app.routes import comparison, what_if
 
 settings = get_settings()
 
@@ -31,15 +31,25 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origin_list,
-    allow_credentials=False,
-    allow_methods=["GET"],
-    allow_headers=["Accept", "Content-Type"],
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(projects_router)
 
 app.include_router(benchmarking_router)
+
+app.include_router(comparison.router)
+
+app.include_router(what_if.router)
+
 
 @app.get("/health", tags=["Health"])
 def health() -> dict[str, str]:

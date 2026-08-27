@@ -15,6 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof BenchmarkingPage !== "undefined") {
     BenchmarkingPage.init();
   }
+  if (typeof ComparisonPage !== "undefined") {
+    ComparisonPage.init();
+  }
+  if (typeof WhatIfPage !== "undefined") {
+    WhatIfPage.init();
+  }
 });
 
 function initSidebarNav() {

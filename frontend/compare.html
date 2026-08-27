@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compare Projects — YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img class="header-brand-logo" src="assets/yourqs.png" alt="YourQS logo"/>
+      </div>
+
+      <nav aria-label="Primary">
+        <ul class="sidebar-nav">
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="index.html" data-nav><span class="nav-label">Projects</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Project Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Benchmarking</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-active is-disabled" tabindex="-1" aria-current="page"><span class="nav-label">Compare Projects</span></a></li>
+          <li><a href="what-if.html" data-nav><span class="nav-label">What-if Analysis</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v1.4</div>
+    </aside>
+
+    <!-- Header -->
+    <header class="app-header">
+      <span class="header-title">Compare Projects</span>
+      <div class="header-meta">
+        <div class="header-org">
+          <div class="header-org-avatar" aria-hidden="true">NZ</div>
+          <span>YourQS Ltd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="app-main">
+      <div class="page-heading">
+        <h1>Compare Projects</h1>
+        <p>Compare construction cost, margins and cost structure across historical projects.</p>
+      </div>
+
+      <!-- Project selector -->
+      <section class="filters-panel" aria-label="Select projects to compare">
+        <div class="field field-search">
+          <label for="cmp-search-input">Search projects</label>
+          <input
+            type="text"
+            id="cmp-search-input"
+            placeholder="Search by project name…"
+            autocomplete="off"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="cmp-search-results"
+          />
+        </div>
+        <p class="panel-note">Only analytics-ready projects can be selected for comparison.</p>
+
+        <div class="project-picker-results" id="cmp-search-results" hidden></div>
+
+        <div class="selected-chips" id="cmp-selected-chips" aria-live="polite"></div>
+
+        <div class="filters-actions">
+          <p class="picker-hint" id="cmp-picker-hint" aria-live="polite">Select at least two projects to compare.</p>
+          <button type="button" class="btn btn-primary" id="cmp-compare-btn" disabled>Compare Projects</button>
+        </div>
+      </section>
+
+      <!-- UI states -->
+      <div aria-live="polite">
+        <div class="panel ui-state" id="cmp-state-initial">
+          <div class="ui-state-title">Select projects to compare</div>
+          <p class="ui-state-body">Choose 2 to 4 projects above, then press Compare Projects to see how they stack up.</p>
+        </div>
+
+        <div class="panel ui-state" id="cmp-state-loading" hidden>
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="ui-state-title">Comparing projects…</div>
+        </div>
+
+        <div class="panel ui-state" id="cmp-state-error" role="alert" hidden>
+          <div class="ui-state-title">Couldn't compare these projects</div>
+          <p class="ui-state-body" id="cmp-error-message">Something went wrong while contacting the server.</p>
+          <button type="button" class="btn btn-primary" id="cmp-retry-btn">Retry</button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div id="cmp-content" hidden>
+        <!-- Comparison summary -->
+        <section class="compare-summary-grid" id="cmp-summary-grid" aria-label="Selected project summary"></section>
+
+        <!-- Full comparison table -->
+        <section class="panel panel-section" aria-label="Full comparison table">
+          <h2 class="panel-title">Full Comparison</h2>
+          <p class="panel-subtitle">All figures are supplied directly by the backend.</p>
+          <div class="table-wrapper">
+            <table class="projects-table" id="cmp-table">
+              <thead id="cmp-table-head"></thead>
+              <tbody id="cmp-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Cost per m² chart -->
+        <section class="panel panel-section" aria-label="Cost per square metre comparison">
+          <h2 class="panel-title">Cost per m²</h2>
+          <p class="panel-subtitle">Construction cost per square metre for each selected project.</p>
+          <div class="chart-container">
+            <canvas id="cmp-cost-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Margin chart -->
+        <section class="panel panel-section" aria-label="Margin comparison">
+          <h2 class="panel-title">Margin</h2>
+          <p class="panel-subtitle">Gross margin percentage for each selected project.</p>
+          <div class="chart-container">
+            <canvas id="cmp-margin-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Cost vs Selling Price grouped chart -->
+        <section class="panel panel-section" aria-label="Cost versus selling price">
+          <h2 class="panel-title">Cost vs Selling Price</h2>
+          <p class="panel-subtitle">Total construction cost against total selling price for each selected project.</p>
+          <div class="chart-container">
+            <canvas id="cmp-cost-vs-selling-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Cost efficiency scatter -->
+        <section class="panel panel-section" aria-label="Cost efficiency">
+          <h2 class="panel-title">Cost Efficiency</h2>
+          <p class="panel-subtitle">Floor area against cost per square metre — one point per selected project.</p>
+          <div class="chart-container">
+            <canvas id="cmp-efficiency-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Top cost scope comparison -->
+        <section class="panel panel-section" aria-label="Top cost scope comparison">
+          <h2 class="panel-title">Top Cost Scope Comparison</h2>
+          <p class="panel-subtitle">How each project's spend is distributed across its top five cost scopes.</p>
+          <div id="cmp-scope-chart"></div>
+          <div class="bar-tooltip" id="cmp-scope-tooltip" role="tooltip" hidden></div>
+          <p class="panel-note">Scope comparison is based on each project's top five cost scopes. A 0% value means the scope wasn't in that project's top five — not that the project has no spend on it.</p>
+
+          <div class="table-wrapper scope-table-wrapper">
+            <table class="projects-table" id="cmp-scope-table">
+              <thead id="cmp-scope-table-head"></thead>
+              <tbody id="cmp-scope-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/dev-fallback-data.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/comparison.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -69,6 +69,35 @@ const Formatters = {
     return `${Number(value).toFixed(fractionDigits)}%`;
   },
 
+  /** Signed NZD currency, e.g. 3276.2 -> "+$3,276.20", -478.4 -> "-$478.40". */
+  currencySigned(value, { precise = false } = {}) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    const formatted = this.currency(Math.abs(value), { precise });
+    return Number(value) < 0 ? `-${formatted}` : `+${formatted}`;
+  },
+
+  /** Signed percentage, e.g. 1.35 -> "+1.35%", -5 -> "-5.00%". */
+  percentSigned(value, fractionDigits = 2) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    const num = Number(value);
+    const formatted = `${Math.abs(num).toFixed(fractionDigits)}%`;
+    return num < 0 ? `-${formatted}` : `+${formatted}`;
+  },
+
+  /** Signed percentage-point difference, e.g. -1.128 -> "-1.13 percentage points". */
+  percentagePoints(value, fractionDigits = 2) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return "N/A";
+    }
+    const num = Number(value);
+    const formatted = `${Math.abs(num).toFixed(fractionDigits)} percentage points`;
+    return num < 0 ? `-${formatted}` : `+${formatted}`;
+  },
+
   /** Format a percentile with its ordinal suffix, e.g. 37.617 -> "37.6th percentile". */
   percentile(value, fractionDigits = 1) {
     if (value === null || value === undefined || Number.isNaN(Number(value))) {

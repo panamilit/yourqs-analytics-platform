@@ -53,13 +53,37 @@ const Api = {
     return this._request(url, { signal });
   },
 
+  /** POST /api/comparison/projects — body: { projectIds } */
+  async compareProjects(projectIds, { signal } = {}) {
+    const url = this.buildUrl("/api/comparison/projects");
+    return this._request(url, {
+      method: "POST",
+      body: { projectIds },
+      signal
+    });
+  },
+
+  /** POST /api/what-if/projects/{project_id} — body: { adjustments } */
+  async runWhatIfScenario(projectId, adjustments, { signal } = {}) {
+    const url = this.buildUrl(`/api/what-if/projects/${encodeURIComponent(projectId)}`);
+    return this._request(url, {
+      method: "POST",
+      body: { adjustments },
+      signal
+    });
+  },
+
   /** Shared fetch wrapper with consistent error handling. */
-  async _request(url, { signal } = {}) {
+  async _request(url, { signal, method = "GET", body = null } = {}) {
     let response;
     try {
       response = await fetch(url, {
-        method: "GET",
-        headers: { Accept: "application/json" },
+        method,
+        headers: {
+          Accept: "application/json",
+          ...(body !== null ? { "Content-Type": "application/json" } : {})
+        },
+        body: body !== null ? JSON.stringify(body) : undefined,
         signal
       });
     } catch (err) {
@@ -74,8 +98,8 @@ const Api = {
     if (!response.ok) {
       let detail = "";
       try {
-        const body = await response.json();
-        detail = body?.message || body?.detail || "";
+        const errorBody = await response.json();
+        detail = errorBody?.message || errorBody?.detail || "";
       } catch (_) {
         /* response had no JSON body */
       }

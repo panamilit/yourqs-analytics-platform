@@ -138,6 +138,7 @@ const BenchmarkingPage = (() => {
   function renderPage(data) {
     renderKpis(data);
     renderPosition(data);
+    renderPositionChart(data);
     renderComparisonBars(data);
     renderRange(data);
     renderDatasetInfo(data);
@@ -203,6 +204,84 @@ const BenchmarkingPage = (() => {
   function ordinalOnly(value) {
     const full = Formatters.percentile(value, 1);
     return full === "N/A" ? "N/A" : full.replace(" percentile", "");
+  }
+
+  /** A one-axis scatter showing only the statistics the API actually
+   *  supplies (min, average, median, max, and this project) — never
+   *  fabricated individual dataset points. Each is its own dataset so it
+   *  gets its own legend entry, colour, and tooltip. Uses renderSafely so
+   *  a chart failure never affects the rest of the (already-rendered)
+   *  page — KPIs, percentile scale, and similar projects stay unaffected. */
+  function renderPositionChart(data) {
+    const p = Charts.palette();
+    const candidates = [
+      { label: "Minimum", value: data.datasetMin, color: p.inkFaint, radius: 5 },
+      { label: "Dataset Average", value: data.datasetAverage, color: p.series[1], radius: 6 },
+      { label: "Dataset Median", value: data.datasetMedian, color: p.series[2], radius: 6 },
+      { label: "Maximum", value: data.datasetMax, color: p.inkFaint, radius: 5 },
+      { label: "Selected Project", value: data.projectCostPerSqm, color: p.accent, radius: 9 }
+    ].filter((pt) => pt.value !== null && pt.value !== undefined && Number.isFinite(Number(pt.value)));
+
+    if (candidates.length === 0) {
+      Charts.destroy("benchmark-position-chart");
+      const canvas = document.getElementById("benchmark-position-chart");
+      const fallback = document.getElementById("benchmark-position-chart-fallback");
+      if (canvas) canvas.hidden = true;
+      if (fallback) {
+        fallback.hidden = false;
+        fallback.textContent = "No benchmark statistics available for this project yet.";
+      }
+      return;
+    }
+
+    Charts.renderSafely(
+      "benchmark-position-chart",
+      {
+        type: "scatter",
+        data: {
+          datasets: candidates.map((pt) => ({
+            label: pt.label,
+            data: [{ x: Number(pt.value), y: 0 }],
+            backgroundColor: pt.color,
+            borderColor: p.surface,
+            borderWidth: 2,
+            pointRadius: pt.radius,
+            pointHoverRadius: pt.radius + 2
+          }))
+        },
+        options: {
+          interaction: { mode: "nearest", intersect: true },
+          scales: {
+            x: {
+              title: { display: true, text: "Cost per m² (NZD)" },
+              ticks: { callback: (value) => Charts.currencyTick(value) },
+              grid: { color: p.border }
+            },
+            y: { display: false, min: -1, max: 1 }
+          },
+          plugins: {
+            legend: { position: "bottom" },
+            tooltip: {
+              callbacks: {
+                title: (items) => candidates[items[0].datasetIndex].label,
+                label: (ctx) => {
+                  const pt = candidates[ctx.datasetIndex];
+                  const lines = [`${Charts.currencyTooltip(pt.value)} / m²`];
+                  if (pt.label === "Selected Project") {
+                    lines.push(Formatters.percentile(data.percentile, 1));
+                  }
+                  return lines;
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        fallbackId: "benchmark-position-chart-fallback",
+        fallbackMessage: "Chart unavailable. The figures above and the percentile scale below are still accurate."
+      }
+    );
   }
 
   /** Horizontal proportional bars comparing Project / Median / Average,
@@ -335,6 +414,10 @@ const BenchmarkingPage = (() => {
     els.stateInsufficient.hidden = !isInsufficient;
     els.stateError.hidden = !isError;
     els.content.hidden = !isReady;
+
+    if (!isReady) {
+      Charts.destroy("benchmark-position-chart");
+    }
 
     if (isError) {
       els.errorMessage.textContent =

@@ -73,7 +73,7 @@ const ProjectDetailsPage = (() => {
       breakdownPanel: document.getElementById("breakdown-panel"),
       breakdownEmpty: document.getElementById("breakdown-empty"),
       breakdownCharts: document.getElementById("breakdown-charts"),
-      barChart: document.getElementById("bar-chart"),
+      topScopeCanvas: document.getElementById("top-scope-chart"),
       donutWrapper: document.querySelector(".donut-wrapper"),
       donut: document.getElementById("donut"),
       donutCenterValue: document.getElementById("donut-center-value"),
@@ -191,6 +191,7 @@ const ProjectDetailsPage = (() => {
       els.breakdownCharts.hidden = true;
       els.breakdownTableWrapper.hidden = true;
       els.breakdownEmpty.hidden = false;
+      Charts.destroy("top-scope-chart");
       return;
     }
 
@@ -203,29 +204,76 @@ const ProjectDetailsPage = (() => {
     renderFullTable(costBreakdown);
   }
 
-  /** Top 10 cost scopes as a horizontal bar chart. Backend already sorts
-   *  costBreakdown by cost descending, so no re-sort is performed. */
+  /** Top 10 cost scopes as a real Chart.js horizontal bar chart. Backend
+   *  already sorts costBreakdown by cost descending, so no re-sort here.
+   *  Uses renderSafely so a chart-specific failure (Chart.js unavailable,
+   *  or any rendering error) never affects the rest of the page — the
+   *  KPIs, drivers, donut, and full table are rendered independently. */
   function renderBarChart(costBreakdown) {
     const top = costBreakdown.slice(0, TOP_BAR_COUNT);
-    const maxCost = top.reduce((max, item) => Math.max(max, Number(item.totalCost) || 0), 0);
 
-    els.barChart.innerHTML = top
-      .map((item) => {
-        const cost = Number(item.totalCost) || 0;
-        const widthPct = maxCost > 0 ? Math.max((cost / maxCost) * 100, 2) : 0;
-        return `
-          <div class="bar-row">
-            <span class="bar-label" title="${escapeHtml(item.scopeName)}">${escapeHtml(
-              item.scopeName
-            )}</span>
-            <span class="bar-track">
-              <span class="bar-fill" style="width:${widthPct}%"></span>
-            </span>
-            <span class="bar-value">${Formatters.currencyCompact(item.totalCost)}</span>
-          </div>
-        `;
-      })
-      .join("");
+    if (top.length === 0) {
+      Charts.destroy("top-scope-chart");
+      const canvas = document.getElementById("top-scope-chart");
+      const fallback = document.getElementById("top-scope-chart-fallback");
+      if (canvas) canvas.hidden = true;
+      if (fallback) {
+        fallback.hidden = false;
+        fallback.textContent = "No cost scope data available for this project.";
+      }
+      return;
+    }
+
+    const p = Charts.palette();
+
+    Charts.renderSafely(
+      "top-scope-chart",
+      {
+        type: "bar",
+        data: {
+          labels: top.map((item) => item.scopeName),
+          datasets: [
+            {
+              label: "Cost",
+              data: top.map((item) => Number(item.totalCost) || 0),
+              backgroundColor: p.accent,
+              borderRadius: 4,
+              maxBarThickness: 22
+            }
+          ]
+        },
+        options: {
+          indexAxis: "y",
+          interaction: { mode: "index", intersect: false },
+          scales: {
+            x: {
+              ticks: { callback: (value) => Charts.currencyTick(value) },
+              grid: { color: p.border }
+            },
+            y: { grid: { display: false } }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                title: (items) => top[items[0].dataIndex].scopeName,
+                label: (ctx) => {
+                  const item = top[ctx.dataIndex];
+                  return [
+                    `Cost: ${Charts.currencyTooltip(item.totalCost)}`,
+                    `Share: ${Formatters.percent(item.percentage, 2)}`
+                  ];
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        fallbackId: "top-scope-chart-fallback",
+        fallbackMessage: "Chart unavailable. The full breakdown table below still shows every scope."
+      }
+    );
   }
 
   /** Top 8 scopes + a frontend-only "Other" bucket, shown as a donut with a

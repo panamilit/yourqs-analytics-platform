@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What-if Analysis — YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img class="header-brand-logo" src="assets/yourqs.png" alt="YourQS logo"/>
+      </div>
+
+      <nav aria-label="Primary">
+        <ul class="sidebar-nav">
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="index.html" data-nav><span class="nav-label">Projects</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Project Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Benchmarking</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="compare.html" data-nav><span class="nav-label">Compare Projects</span></a></li>
+          <li><a href="#" data-nav class="is-active is-disabled" tabindex="-1" aria-current="page"><span class="nav-label">What-if Analysis</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v1.4</div>
+    </aside>
+
+    <!-- Header -->
+    <header class="app-header">
+      <span class="header-title">What-if Analysis</span>
+      <div class="header-meta">
+        <div class="header-org">
+          <div class="header-org-avatar" aria-hidden="true">NZ</div>
+          <span>YourQS Ltd</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="app-main">
+      <div class="page-heading detail-heading">
+        <h1>What-if Analysis</h1>
+        <p class="page-heading-name" id="wi-project-name" hidden></p>
+        <p>Adjust any scope and watch the effect on cost and margin update live.</p>
+      </div>
+
+      <!-- Project selector (unchanged, independent of scope search) -->
+      <section class="filters-panel" aria-label="Select a project">
+        <div class="field field-search">
+          <label for="wi-project-search">Search projects</label>
+          <input
+            type="text"
+            id="wi-project-search"
+            placeholder="Search by project name…"
+            autocomplete="off"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="wi-project-results"
+          />
+        </div>
+        <p class="panel-note">Only analytics-ready projects with complete cost and floor-area data can be used for What-if Analysis.</p>
+
+        <div class="project-picker-results" id="wi-project-results" hidden></div>
+
+        <div class="selected-chips" id="wi-selected-project-chip" aria-live="polite"></div>
+      </section>
+
+      <!-- Project details loading / error (loading scopes for the selected project) -->
+      <div aria-live="polite">
+        <div class="panel ui-state" id="wi-state-details-loading" hidden>
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="ui-state-title">Loading project scopes…</div>
+        </div>
+        <div class="panel ui-state" id="wi-state-details-error" role="alert" hidden>
+          <div class="ui-state-title">Couldn't load this project's cost scopes</div>
+          <p class="ui-state-body" id="wi-details-error-message">Something went wrong while contacting the server.</p>
+          <button type="button" class="btn btn-primary" id="wi-details-retry-btn">Retry</button>
+        </div>
+        <div class="panel ui-state" id="wi-state-no-scopes" hidden>
+          <div class="ui-state-title">No cost scopes available</div>
+          <p class="ui-state-body">This project doesn't have scope-level cost data to build a scenario from.</p>
+        </div>
+      </div>
+
+      <!-- Live scenario summary: acts as the Before/After visualisation, sticky near the top -->
+      <section class="panel wi-summary-panel" id="wi-summary-panel" aria-label="Current scenario summary" aria-live="polite" hidden>
+        <h2 class="panel-title">Current Scenario</h2>
+
+        <div class="wi-summary-empty" id="wi-summary-empty">
+          <p class="ui-state-body">Adjust any scope below to see the effect on total cost, cost per m², and margin.</p>
+        </div>
+
+        <div id="wi-summary-body" hidden>
+          <table class="wi-summary-table">
+            <thead>
+              <tr>
+                <th scope="col">Metric</th>
+                <th scope="col" class="col-numeric">Original</th>
+                <th scope="col" aria-hidden="true"></th>
+                <th scope="col" class="col-numeric">Scenario</th>
+                <th scope="col" class="col-numeric">Impact</th>
+              </tr>
+            </thead>
+            <tbody id="wi-summary-table-body"></tbody>
+          </table>
+          <span class="filter-loading-badge" id="wi-updating-badge" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            Updating scenario…
+          </span>
+          <p class="field-error" id="wi-recalc-error" hidden></p>
+        </div>
+      </section>
+
+      <!-- Scenario adjustments: every scope is visible immediately -->
+      <section class="filters-panel" id="wi-adjustments-panel" aria-label="Scenario adjustments" hidden>
+        <h2 class="panel-title">Scenario Adjustments</h2>
+        <p class="panel-subtitle">Every cost scope for this project is listed below. Adjust any row — changes apply automatically. Positive values increase cost, negative values reduce it (-100% to +500%).</p>
+
+        <div class="wi-scope-controls">
+          <div class="field field-search">
+            <label for="wi-scope-search">Search scopes</label>
+            <input type="text" id="wi-scope-search" placeholder="Filter the list below…" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="wi-sort-select">Sort by</label>
+            <select id="wi-sort-select">
+              <option value="cost-desc">Highest Cost</option>
+              <option value="cost-asc">Lowest Cost</option>
+              <option value="name">Name</option>
+              <option value="largest-adjustment">Largest Adjustment</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="picker-hint" id="wi-scope-count-hint" aria-live="polite"></p>
+
+        <div class="wi-scope-list" id="wi-scope-list" aria-live="polite"></div>
+
+        <div class="filters-actions">
+          <button type="button" class="btn btn-secondary" id="wi-reset-btn">Reset Scenario</button>
+        </div>
+      </section>
+
+      <!-- Original vs Scenario Total Cost + Margin Before vs After -->
+      <div class="charts-grid">
+        <section class="panel panel-section" id="wi-cost-chart-panel" aria-label="Original vs scenario total cost" hidden>
+          <h2 class="panel-title panel-title-sm">Original vs Scenario Total Cost</h2>
+          <div class="chart-container is-compact">
+            <canvas id="wi-cost-chart"></canvas>
+            <p class="chart-fallback" id="wi-cost-chart-fallback" hidden></p>
+          </div>
+        </section>
+        <section class="panel panel-section" id="wi-margin-chart-panel" aria-label="Margin before vs after" hidden>
+          <h2 class="panel-title panel-title-sm">Margin Before vs After</h2>
+          <div class="chart-container is-compact">
+            <canvas id="wi-margin-chart"></canvas>
+            <p class="chart-fallback" id="wi-margin-chart-fallback" hidden></p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Scope Cost Impact — wide diverging chart -->
+      <section class="panel panel-section" id="wi-scope-impact-panel" aria-label="Scope cost impact" hidden>
+        <h2 class="panel-title">Scope Cost Impact</h2>
+        <p class="panel-subtitle">Cost difference introduced by each adjusted scope. Increases extend right, decreases extend left.</p>
+        <div class="ui-state" id="wi-scope-impact-empty" hidden>
+          <p class="ui-state-body">Adjust one or more scopes to see their cost impact.</p>
+        </div>
+        <div class="chart-container is-tall" id="wi-scope-impact-container">
+          <canvas id="wi-scope-impact-chart"></canvas>
+          <p class="chart-fallback" id="wi-scope-impact-chart-fallback" hidden></p>
+        </div>
+      </section>
+
+      <!-- Original vs Adjusted Scopes + Scenario Cost Distribution -->
+      <div class="charts-grid">
+        <section class="panel panel-section" id="wi-scope-compare-panel" aria-label="Original vs adjusted scope costs" hidden>
+          <h2 class="panel-title panel-title-sm">Original vs Adjusted Scope Costs</h2>
+          <div class="chart-container">
+            <canvas id="wi-scope-compare-chart"></canvas>
+            <p class="chart-fallback" id="wi-scope-compare-chart-fallback" hidden></p>
+          </div>
+        </section>
+        <section class="panel panel-section" id="wi-distribution-panel" aria-label="Scenario cost distribution" hidden>
+          <h2 class="panel-title panel-title-sm">Scenario Cost Distribution</h2>
+          <p class="panel-note">A separate chart from the Project Analysis Cost Distribution — this one reflects the current scenario.</p>
+          <div class="chart-container">
+            <canvas id="wi-distribution-chart"></canvas>
+            <p class="chart-fallback" id="wi-distribution-chart-fallback" hidden></p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Adjustment result detail table -->
+      <section class="panel panel-section" id="wi-results-table-panel" aria-label="Adjustment results" hidden>
+        <h2 class="panel-title">Adjustment Detail</h2>
+        <p class="panel-subtitle">Exact figures confirmed by the server for every adjusted scope.</p>
+        <div class="table-wrapper">
+          <table class="projects-table">
+            <thead>
+              <tr>
+                <th scope="col">Scope</th>
+                <th scope="col" class="col-numeric">Original</th>
+                <th scope="col" class="col-numeric">Change</th>
+                <th scope="col" class="col-numeric">Adjusted</th>
+                <th scope="col" class="col-numeric">Impact</th>
+              </tr>
+            </thead>
+            <tbody id="wi-adjustment-results-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/dev-fallback-data.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/what-if.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

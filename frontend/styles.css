@@ -156,6 +156,7 @@ select:focus-visible,
   flex-shrink: 0;
 }
 
+
 .sidebar-brand .header-brand-logo {
   width: min(100%, 128px);
   height: auto;
@@ -288,17 +289,6 @@ select:focus-visible,
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-5);
-}
-
-.header-brand-logo {
-  width: 128px;
-  height: 128px;
-  object-fit: contain;
-  display: block;
-  border-radius: 0;
-  background: transparent;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 .header-title {
@@ -830,6 +820,7 @@ select:focus-visible,
 
 /* Generic card-style container, same visual language as .filters-panel */
 .panel {
+  position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -852,6 +843,15 @@ select:focus-visible,
 .panel-title-sm {
   font-size: 13.5px;
   align-self: flex-start;
+}
+
+/* A slightly larger heading than .panel-title, used to introduce a group
+   of sections (e.g. "Scenario Results") without its own card chrome. */
+.section-heading {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-4);
 }
 
 .panel-subtitle {
@@ -1002,6 +1002,7 @@ select:focus-visible,
 }
 
 .bar-track {
+  display: block;
   height: 14px;
   border-radius: 999px;
   background: var(--color-surface-sunken);
@@ -1010,6 +1011,7 @@ select:focus-visible,
 }
 
 .bar-fill {
+  display: block;
   height: 100%;
   background: var(--color-accent);
   border-radius: 999px;
@@ -1423,6 +1425,631 @@ select:focus-visible,
 }
 
 /* ==========================================================================
+   Compare Projects page
+   Reuses .filters-panel, .field, .panel, .projects-table, .bar-chart and
+   the existing chart colour tokens. Each selected project gets a consistent
+   identity colour (chart-1..4) shown alongside its name everywhere — never
+   colour alone — in chips, table headers, and chart bars.
+   ========================================================================== */
+
+/* Search dropdown */
+
+.project-picker-results {
+  position: relative;
+  margin-top: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.project-picker-results[hidden] {
+  display: none;
+}
+
+.picker-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.picker-result-item:last-child {
+  border-bottom: none;
+}
+
+.picker-result-item:hover,
+.picker-result-item:focus-visible {
+  background: var(--color-surface-sunken);
+}
+
+.picker-result-item:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.picker-result-item:disabled .status-badge {
+  opacity: 0.8;
+}
+
+.picker-result-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.picker-result-status-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.picker-result-meta {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-ink-muted);
+}
+
+.picker-result-empty {
+  padding: var(--space-4);
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+
+/* Selected project chips */
+
+.selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  font-size: 12.5px;
+  color: var(--color-ink);
+  max-width: 260px;
+}
+
+.chip-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-remove {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip-remove:hover {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+}
+
+.picker-hint {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+}
+
+.picker-hint.is-ready {
+  color: var(--color-accent-dark);
+}
+
+.picker-hint.is-max {
+  color: var(--color-warn);
+}
+
+/* Comparison summary cards */
+
+.compare-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.compare-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.compare-summary-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-2);
+  overflow-wrap: anywhere;
+}
+
+.compare-summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink-muted);
+}
+
+/* Comparison table project-column headers */
+
+.table-project-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.scope-table-wrapper {
+  margin-top: var(--space-5);
+}
+
+/* Bar chart rows used for comparisons are keyboard-focusable and get a
+   shared tooltip, same visual language as the donut tooltip. */
+
+.bar-row[tabindex] {
+  cursor: default;
+  border-radius: var(--radius-sm);
+}
+
+.bar-row[tabindex]:hover .bar-fill,
+.bar-row[tabindex].is-active .bar-fill {
+  filter: brightness(1.1);
+}
+
+.bar-tooltip {
+  position: absolute;
+  z-index: 10;
+  min-width: 140px;
+  max-width: 220px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+
+.bar-tooltip[hidden] {
+  display: none;
+}
+
+.bar-tooltip-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+  margin-bottom: 2px;
+}
+
+.bar-tooltip-value {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-accent-dark);
+}
+
+/* Scope comparison groups (one mini bar-chart per scope) */
+
+.scope-compare-group {
+  margin-bottom: var(--space-4);
+}
+
+.scope-compare-group:last-child {
+  margin-bottom: 0;
+}
+
+.scope-compare-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-2);
+}
+
+.scope-compare-group .bar-chart {
+  gap: var(--space-2);
+}
+
+.scope-compare-group .bar-row {
+  grid-template-columns: minmax(0, 130px) 1fr auto;
+}
+
+/* ==========================================================================
+   What-if Analysis page
+   Reuses .filters-panel, .field, .panel, .projects-table,
+   .project-picker-results and existing tokens throughout. New here: the
+   live scope list with inline step/number/slider controls, the sticky
+   before/after summary table, the waterfall, and the margin dumbbell —
+   deliberately not more horizontal bars.
+   ========================================================================== */
+
+.table-input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  width: 90px;
+  text-align: right;
+}
+
+.table-input:focus {
+  border-color: var(--color-accent);
+}
+
+.table-input.is-invalid {
+  border-color: var(--color-danger);
+}
+
+.field-error {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-danger);
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+/* Live scenario summary (sticky Before/After panel) */
+
+.wi-summary-panel {
+  position: sticky;
+  top: var(--space-4);
+  z-index: 4;
+  margin-bottom: var(--space-5);
+}
+
+.wi-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wi-summary-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.wi-summary-table th.col-numeric {
+  text-align: right;
+}
+
+.wi-summary-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+.wi-summary-table tr:last-child td {
+  border-bottom: none;
+}
+
+.wi-summary-table td.col-numeric {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.wi-summary-metric {
+  font-weight: 600;
+}
+
+.wi-summary-arrow {
+  color: var(--color-ink-faint);
+  text-align: center;
+  width: 20px;
+}
+
+.wi-summary-impact {
+  font-weight: 600;
+}
+
+.wi-summary-impact.is-favorable {
+  color: var(--color-accent-dark);
+}
+
+.wi-summary-impact.is-caution {
+  color: var(--color-warn);
+}
+
+.wi-summary-impact.is-neutral {
+  color: var(--color-ink-muted);
+}
+
+.wi-summary-empty[hidden] {
+  display: none;
+}
+
+#wi-updating-badge {
+  margin-top: var(--space-3);
+}
+
+/* Scope search + sort controls */
+
+.wi-scope-controls {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.wi-scope-controls select {
+  font-family: inherit;
+  font-size: 13.5px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  height: 36px;
+}
+
+/* Live scope list */
+
+.wi-scope-list {
+  max-height: 620px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin: var(--space-4) 0;
+}
+
+.wi-scope-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.wi-scope-row:last-child {
+  border-bottom: none;
+}
+
+.wi-scope-row.is-modified {
+  background: var(--color-accent-tint);
+  border-left: 3px solid var(--color-accent);
+}
+
+.wi-scope-row.is-invalid-row {
+  background: var(--color-danger-tint);
+  border-left: 3px solid var(--color-danger);
+}
+
+.wi-scope-info {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.wi-scope-name {
+  font-size: 13px;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wi-scope-cost {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.wi-scope-badge {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.wi-scope-badge[hidden] {
+  display: none;
+}
+
+.wi-scope-controls-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.wi-step-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wi-step-btn:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-ink);
+}
+
+.wi-percent-input {
+  width: 60px;
+  text-align: center;
+  padding: 3px 4px;
+}
+
+.wi-percent-sign {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+  flex-shrink: 0;
+}
+
+/* Custom slider matching the app's restrained palette */
+
+.wi-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 110px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border-strong);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.wi-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-accent-dark);
+  cursor: pointer;
+}
+
+.wi-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-accent-dark);
+  cursor: pointer;
+}
+
+.wi-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border-strong);
+}
+
+/* ==========================================================================
+   Chart.js containers
+   Every canvas needs an explicit-height, positioned parent since charts
+   use responsive:true + maintainAspectRatio:false.
+   ========================================================================== */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-height: 220px;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-container.is-compact {
+  height: 220px;
+}
+
+.chart-container.is-tall {
+  height: 420px;
+}
+
+/* Shown in place of a canvas when a chart cannot render (Chart.js
+   unavailable, or a chart-specific error) — never leaves blank space. */
+.chart-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-4);
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-sunken);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.chart-fallback[hidden] {
+  display: none;
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
@@ -1462,6 +2089,24 @@ select:focus-visible,
   }
   .charts-grid {
     grid-template-columns: 1fr;
+  }
+  .compare-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wi-scope-controls {
+    grid-template-columns: 1fr;
+  }
+  .wi-scope-row {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  .wi-scope-controls-row {
+    width: 100%;
+  }
+  .wi-slider {
+    flex: 1;
+    min-width: 60px;
   }
 }
 
@@ -1520,4 +2165,41 @@ select:focus-visible,
   .row-actions {
     flex-direction: column;
   }
+  .compare-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .chip {
+    max-width: 200px;
+  }
+  .scope-compare-group .bar-row {
+    grid-template-columns: 96px 1fr auto;
+  }
+  .wi-summary-table {
+    font-size: 12px;
+  }
+  .wi-summary-panel {
+    position: static;
+  }
+  .chart-container {
+    height: 240px;
+  }
+  .chart-container.is-tall {
+    height: 340px;
+  }
+}
+
+
+/* ==========================================================================
+   Interactive Chart.js canvases
+   ========================================================================== */
+
+.chart-container canvas {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+
+.chart-container canvas:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }

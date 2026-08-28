@@ -11,13 +11,16 @@ namespace YourQS.API.Controllers
     {
         private readonly IAnalyticsRepository _analyticsRepository;
         private readonly IWhatIfService _whatIfService;
+        private readonly IBenchmarkService _benchmarkService;
 
         public AnalyticsController(
             IAnalyticsRepository analyticsRepository,
-            IWhatIfService whatIfService)
+            IWhatIfService whatIfService,
+            IBenchmarkService benchmarkService)
         {
             _analyticsRepository = analyticsRepository;
             _whatIfService = whatIfService;
+            _benchmarkService = benchmarkService;
         }
 
         [HttpGet("cost-per-sqm")]
@@ -28,11 +31,36 @@ namespace YourQS.API.Controllers
         }
 
         [HttpGet("benchmark/{projectId}")]
-        public async Task<IActionResult> GetBenchmark(string projectId)
+        [ProducesResponseType(typeof(BenchmarkDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> GetBenchmark(
+            string projectId,
+            [FromQuery] BenchmarkQueryDto query)
         {
-            var result = await _analyticsRepository.GetBenchmarkAsync(projectId);
-            if (result == null) return NotFound();
-            return Ok(result);
+            var outcome = await _benchmarkService.CalculateAsync(projectId, query);
+
+            if (outcome.IsSuccess)
+            {
+                return Ok(outcome.Result);
+            }
+
+            var problem = new ProblemDetails
+            {
+                Title = "Benchmark could not be calculated",
+                Detail = outcome.ErrorMessage,
+                Status = outcome.ErrorCode == "project_not_ready"
+                    ? StatusCodes.Status404NotFound
+                    : StatusCodes.Status422UnprocessableEntity
+            };
+            problem.Extensions["code"] = outcome.ErrorCode;
+
+            if (outcome.ErrorCode == "insufficient_peers")
+            {
+                problem.Extensions["availablePeerCount"] = outcome.AvailablePeerCount;
+            }
+
+            return StatusCode(problem.Status.Value, problem);
         }
 
         [HttpGet("whatif/{projectId}")]

@@ -32,32 +32,76 @@ namespace YourQS.API.Repositories
             return await connection.QueryAsync<CostPerSqmDto>(sql);
         }
 
-        public async Task<BenchmarkDto?> GetBenchmarkAsync(string projectId)
+        public async Task<IEnumerable<BenchmarkCandidateDto>> GetBenchmarkCandidatesAsync(
+            string projectId,
+            decimal floorAreaTolerancePercent,
+            bool matchNumberOfLevels)
         {
-            // Get all project costs, compute benchmark in C#
-            var all = (await GetCostPerSqmAsync()).ToList();
-            if (!all.Any()) return null;
+            const string sql = @"
+                WITH target AS (
+                    SELECT
+                        project_id,
+                        project_name,
+                        floor_area,
+                        number_of_levels,
+                        selling_price_per_sqm
+                    FROM public.""VW_PROJECT_OVERVIEW""
+                    WHERE UPPER(BTRIM(project_id, '{} ')) =
+                          UPPER(BTRIM(@ProjectId, '{} '))
+                      AND is_analytics_ready = TRUE
+                      AND floor_area IS NOT NULL
+                      AND floor_area > 0
+                      AND selling_price_per_sqm IS NOT NULL
+                )
+                SELECT
+                    candidate.project_id AS ""ProjectId"",
+                    candidate.project_name AS ""ProjectName"",
+                    candidate.floor_area AS ""FloorArea"",
+                    candidate.number_of_levels AS ""NumberOfLevels"",
+                    candidate.selling_price_per_sqm AS ""CostPerSqm""
+                FROM public.""VW_PROJECT_OVERVIEW"" candidate
+                CROSS JOIN target
+                WHERE candidate.is_analytics_ready = TRUE
+                  AND candidate.floor_area IS NOT NULL
+                  AND candidate.floor_area > 0
+                  AND candidate.selling_price_per_sqm IS NOT NULL
+                  AND (
+                      candidate.project_id = target.project_id
+                      OR (
+                          candidate.project_id <> target.project_id
+                          AND candidate.floor_area BETWEEN
+                              target.floor_area * (1 - @FloorAreaTolerancePercent / 100.0)
+                              AND target.floor_area * (1 + @FloorAreaTolerancePercent / 100.0)
+                          AND (
+                              NOT @MatchNumberOfLevels
+                              OR candidate.number_of_levels IS NOT DISTINCT FROM target.number_of_levels
+                          )
+                      )
+                  )
+                ORDER BY
+                    (candidate.project_id = target.project_id) DESC,
+                    candidate.project_id";
 
-            var project = all.FirstOrDefault(p => p.ProjectId == projectId);
-            if (project == null) return null;
-
-            var avg = all.Average(p => p.CostPerSqm);
-            var variance = avg == 0 ? 0 : ((project.CostPerSqm - avg) / avg) * 100;
-            var isFlagged = Math.Abs(variance) > 20;
-
-            return new BenchmarkDto
+            using var connection = _connectionFactory.CreateConnection();
+            var candidates = (await connection.QueryAsync<BenchmarkCandidateDto>(sql, new
             {
-                ProjectId        = project.ProjectId,
-                ProjectName      = project.ProjectName,
-                ProjectCostPerSqm = project.CostPerSqm,
-                AverageCostPerSqm = avg,
-                VariancePercent  = variance,
-                IsFlagged        = isFlagged,
-                FlagReason       = isFlagged
-                    ? $"Cost per m² is {variance:+0.0;-0.0}% vs dataset average"
-                    : string.Empty
-            };
+                ProjectId = projectId,
+                FloorAreaTolerancePercent = floorAreaTolerancePercent,
+                MatchNumberOfLevels = matchNumberOfLevels
+            })).ToList();
+
+            var normalizedTargetId = NormalizeProjectId(projectId);
+
+            foreach (var candidate in candidates)
+            {
+                candidate.IsTarget = NormalizeProjectId(candidate.ProjectId) == normalizedTargetId;
+            }
+
+            return candidates;
         }
+
+        private static string NormalizeProjectId(string projectId) =>
+            projectId.Trim().Trim('{', '}').ToUpperInvariant();
 
         public async Task<WhatIfDto?> GetWhatIfAsync(string projectId, string scopeName, double changePercent)
         {

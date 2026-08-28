@@ -68,6 +68,11 @@ Accept: application/json
 
 ###
 
+GET {{HostAddress}}/api/analytics/benchmark/{92B51B88-C0D3-4A04-872F-E2CFD3D1929F}?floorAreaTolerancePercent=20&alertThresholdPercent=20&minimumPeers=3&matchNumberOfLevels=true
+Accept: application/json
+
+###
+
 ### Material what-if: replace a timber floor with concrete at $185/m2
 POST {{HostAddress}}/api/analytics/what-if
 Content-Type: application/json

@@ -59,11 +59,70 @@ namespace YourQS.API.DTOs
     {
         public string ProjectId { get; set; } = string.Empty;
         public string ProjectName { get; set; } = string.Empty;
+        public decimal FloorArea { get; set; }
+        public int? NumberOfLevels { get; set; }
         public decimal ProjectCostPerSqm { get; set; }
+        public int PeerCount { get; set; }
+        public decimal FloorAreaTolerancePercent { get; set; }
+        public decimal MinimumComparableFloorArea { get; set; }
+        public decimal MaximumComparableFloorArea { get; set; }
+        public bool MatchedNumberOfLevels { get; set; }
         public decimal AverageCostPerSqm { get; set; }
+        public decimal MedianCostPerSqm { get; set; }
+        public decimal MinimumCostPerSqm { get; set; }
+        public decimal MaximumCostPerSqm { get; set; }
         public decimal VariancePercent { get; set; }
+        public decimal AlertThresholdPercent { get; set; }
         public bool IsFlagged { get; set; }
+        public string FlagDirection { get; set; } = string.Empty;
         public string FlagReason { get; set; } = string.Empty;
+    }
+
+    public class BenchmarkQueryDto
+    {
+        [Range(typeof(decimal), "1", "100")]
+        public decimal FloorAreaTolerancePercent { get; set; } = 20;
+
+        [Range(typeof(decimal), "1", "100")]
+        public decimal AlertThresholdPercent { get; set; } = 20;
+
+        [Range(1, 100)]
+        public int MinimumPeers { get; set; } = 3;
+
+        public bool MatchNumberOfLevels { get; set; } = true;
+    }
+
+    public class BenchmarkCandidateDto
+    {
+        public string ProjectId { get; set; } = string.Empty;
+        public string ProjectName { get; set; } = string.Empty;
+        public decimal FloorArea { get; set; }
+        public int? NumberOfLevels { get; set; }
+        public decimal CostPerSqm { get; set; }
+        public bool IsTarget { get; set; }
+    }
+
+    public class BenchmarkCalculationOutcome
+    {
+        public BenchmarkDto? Result { get; init; }
+        public string? ErrorCode { get; init; }
+        public string? ErrorMessage { get; init; }
+        public int AvailablePeerCount { get; init; }
+        public bool IsSuccess => Result is not null;
+
+        public static BenchmarkCalculationOutcome Success(BenchmarkDto result) =>
+            new() { Result = result };
+
+        public static BenchmarkCalculationOutcome Failure(
+            string code,
+            string message,
+            int availablePeerCount = 0) =>
+            new()
+            {
+                ErrorCode = code,
+                ErrorMessage = message,
+                AvailablePeerCount = availablePeerCount
+            };
     }
 
     public class WhatIfDto

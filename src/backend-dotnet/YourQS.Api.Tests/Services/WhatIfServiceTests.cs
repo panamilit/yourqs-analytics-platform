@@ -179,8 +179,11 @@ public class WhatIfServiceTests
         public Task<IEnumerable<CostPerSqmDto>> GetCostPerSqmAsync() =>
             Task.FromResult(Enumerable.Empty<CostPerSqmDto>());
 
-        public Task<BenchmarkDto?> GetBenchmarkAsync(string projectId) =>
-            Task.FromResult<BenchmarkDto?>(null);
+        public Task<IEnumerable<BenchmarkCandidateDto>> GetBenchmarkCandidatesAsync(
+            string projectId,
+            decimal floorAreaTolerancePercent,
+            bool matchNumberOfLevels) =>
+            Task.FromResult(Enumerable.Empty<BenchmarkCandidateDto>());
 
         public Task<WhatIfDto?> GetWhatIfAsync(
             string projectId,

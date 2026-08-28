@@ -22,3 +22,6 @@ tzdata==2026.3
 uvicorn==0.51.0
 watchfiles==1.2.0
 websockets==16.1
+PyJWT==2.10.1
+pwdlib[argon2]==0.3.0
+email-validator==2.3.0

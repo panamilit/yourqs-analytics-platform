@@ -26,22 +26,63 @@
           <li><a href="#" data-nav id="nav-project-analysis-link"><span class="nav-label">Project Analysis</span></a></li>
           <li><a href="#" data-nav class="is-active is-disabled" tabindex="-1" aria-current="page"><span class="nav-label">Benchmarking</span></a></li>
           <li><a href="compare.html" data-nav><span class="nav-label">Compare Projects</span></a></li>
-          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">What-if Analysis</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="what-if.html" data-nav><span class="nav-label">What-if Analysis</span></a></li>
           <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="dev.html" data-nav><span class="nav-label">Admin Panel</span></a></li>
         </ul>
       </nav>
 
-      <div class="sidebar-footer">YourQS Analytics<br />Internal build v1.4</div>
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v1.5</div>
     </aside>
 
     <!-- Header -->
     <header class="app-header">
       <span class="header-title">Benchmarking</span>
       <div class="header-meta">
-        <div class="header-org">
-          <div class="header-org-avatar" aria-hidden="true">NZ</div>
-          <span>YourQS Ltd</span>
-        </div>
+
+        <!-- Not signed in -->
+        <a
+          href="auth.html"
+          class="header-account"
+          id="header-auth-guest"
+        >
+          <div class="header-org-avatar" aria-hidden="true">?</div>
+
+          <div class="header-user-text">
+            <span class="header-user-name">Sign in</span>
+            <span class="header-user-sub">YourQS Analytics</span>
+          </div>
+        </a>
+
+        <!-- Signed in -->
+        <a
+          href="dev.html"
+          class="header-account"
+          id="header-auth-user"
+          hidden
+        >
+          <div
+            class="header-org-avatar"
+            id="global-user-avatar"
+            aria-hidden="true"
+          >
+            --
+          </div>
+
+          <div class="header-user-text">
+            <span
+              class="header-user-name"
+              id="global-user-name"
+            >
+              User
+            </span>
+
+            <span class="header-user-sub">
+              Admin Panel
+            </span>
+          </div>
+        </a>
+
       </div>
     </header>
 
@@ -199,6 +240,8 @@
   <script src="js/config.js"></script>
   <script src="js/formatters.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/session-ui.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/benchmarking.js"></script>
   <script src="js/app.js"></script>

@@ -22,6 +22,14 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5500,http://localhost:5500"
     )
 
+    # ------------------------------------------------------------------
+    # Prototype authentication
+    # ------------------------------------------------------------------
+
+    jwt_secret_key: str
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = Field(default=1440, ge=5)
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

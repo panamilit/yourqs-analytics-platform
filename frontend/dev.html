@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Preview — YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img class="header-brand-logo" src="assets/yourqs.png" alt="YourQS logo" />
+      </div>
+
+      <nav aria-label="Primary">
+        <ul class="sidebar-nav">
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Overview</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="index.html" data-nav><span class="nav-label">Projects</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Project Analysis</span><span class="nav-soon">Select project</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Benchmarking</span><span class="nav-soon">Select project</span></a></li>
+          <li><a href="compare.html" data-nav><span class="nav-label">Compare Projects</span></a></li>
+          <li><a href="what-if.html" data-nav><span class="nav-label">What-if Analysis</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
+          <li><a href="dev.html" data-nav class="is-active" aria-current="page"><span class="nav-label">Admin Panel</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">YourQS Analytics<br />Internal build v1.5</div>
+    </aside>
+
+    <!-- Header -->
+    <header class="app-header">
+      <span class="header-title">Admin Panel</span>
+      <div class="header-meta">
+        <div class="header-org">
+          <div class="header-org-avatar" id="header-user-avatar" aria-hidden="true">–</div>
+          <div class="header-user-text">
+            <span class="header-user-name" id="header-user-name">Loading…</span>
+            <span class="header-user-sub" id="header-user-sub"></span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="logout-btn">Sign out</button>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="app-main">
+      <div class="page-heading">
+        <h1>Developer Preview</h1>
+        <p>Feedback, ideas and future platform requirements for the YourQS Analytics prototype.</p>
+      </div>
+
+      <!-- Feedback & Ideas -->
+      <section class="panel panel-section" id="feedback-form-panel" aria-label="Feedback and ideas">
+        <h2 class="panel-title">Feedback &amp; Ideas</h2>
+        <p class="panel-subtitle">Share bugs, usability issues, feature ideas, data concerns or general suggestions.</p>
+
+        <p class="auth-alert" id="feedback-alert" role="alert" hidden></p>
+
+        <form class="auth-form" id="feedback-form" novalidate>
+          <div class="auth-field-row">
+            <div class="field">
+              <label for="feedback-category">Category</label>
+              <select id="feedback-category" name="category" required>
+                <option value="">Select a category…</option>
+                <option value="feature">Feature idea</option>
+                <option value="bug">Bug</option>
+                <option value="ux">UX / Usability</option>
+                <option value="data">Data issue</option>
+                <option value="future_project">Future project creation</option>
+                <option value="other">Other</option>
+              </select>
+              <span class="field-error" id="feedback-category-error" aria-live="polite" hidden></span>
+            </div>
+
+            <div class="field">
+              <label for="feedback-feature">Feature / Area <span class="auth-optional">(optional)</span></label>
+              <select id="feedback-feature" name="feature">
+                <option value="">Select an area…</option>
+                <option value="Platform / General">Platform / General</option>
+                <option value="Projects Overview">Projects Overview</option>
+                <option value="Project Analysis">Project Analysis</option>
+                <option value="Benchmarking">Benchmarking</option>
+                <option value="Compare Projects">Compare Projects</option>
+                <option value="What-if Analysis">What-if Analysis</option>
+                <option value="Authentication">Authentication</option>
+                <option value="Future Project Creation">Future Project Creation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="feedback-message">Message</label>
+            <textarea id="feedback-message" name="message" rows="4" maxlength="20000" required></textarea>
+            <div class="field-hint-row">
+              <span class="field-error" id="feedback-message-error" aria-live="polite" hidden></span>
+              <span class="char-count" id="feedback-char-count">0 / 20000</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="feedback-submit-btn">Submit feedback</button>
+        </form>
+      </section>
+
+      <!-- Feedback & Suggestions -->
+      <section class="panel panel-section" aria-label="Feedback and suggestions">
+        <div class="feedback-list-header">
+          <div>
+            <h2 class="panel-title">Feedback &amp; Suggestions</h2>
+            <p class="panel-subtitle">See ideas and feedback shared by everyone using the prototype.</p>
+          </div>
+
+          <div class="feedback-tabs" role="tablist" aria-label="Submission filter">
+            <button type="button" class="feedback-tab is-active" id="feedback-tab-all" role="tab" aria-selected="true" data-feedback-filter="all">All submissions</button>
+            <button type="button" class="feedback-tab" id="feedback-tab-mine" role="tab" aria-selected="false" data-feedback-filter="mine">My submissions</button>
+          </div>
+        </div>
+
+        <div class="ui-state" id="feedback-list-loading">
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="ui-state-title">Loading submissions…</div>
+        </div>
+
+        <div class="ui-state" id="feedback-list-error" role="alert" hidden>
+          <div class="ui-state-title">Couldn't load submissions</div>
+          <p class="ui-state-body" id="feedback-list-error-message">Something went wrong while contacting the server.</p>
+          <button type="button" class="btn btn-primary" id="feedback-list-retry-btn">Retry</button>
+        </div>
+
+        <div class="ui-state" id="feedback-list-empty" hidden>
+          <div class="ui-state-title" id="feedback-empty-title">No submissions yet</div>
+          <p class="ui-state-body" id="feedback-empty-message">No feedback has been submitted yet.</p>
+        </div>
+
+        <ul class="feedback-list" id="feedback-list" hidden aria-live="polite"></ul>
+      </section>
+
+      <!-- Future Platform Development -->
+      <section class="panel panel-section" aria-label="Future platform development">
+        <h2 class="panel-title">Future Platform Development</h2>
+        <p class="panel-subtitle">The current prototype focuses on analytics. Future versions could expand into broader project and data management workflows.</p>
+
+        <div class="future-card">
+          <div class="future-card-header">
+            <h3 class="future-card-title">Create &amp; Manage Projects</h3>
+            <span class="status-badge status-feedback-planned">Planned / Future concept</span>
+          </div>
+          <p class="future-card-body">Future versions of the platform could allow authorised users to create and manage projects directly within YourQS Analytics.</p>
+
+          <ul class="capability-list">
+            <li>Create a new project</li>
+            <li>Enter project attributes</li>
+            <li>Add construction scopes</li>
+            <li>Add cost items</li>
+            <li>Edit project information</li>
+            <li>Archive projects</li>
+            <li>Run analytics immediately after data entry</li>
+            <li>Benchmark newly created projects against historical data</li>
+            <li>Use What-if analysis during project planning</li>
+          </ul>
+
+          <button type="button" class="btn btn-secondary btn-sm" id="suggest-requirements-btn">Suggest requirements</button>
+        </div>
+      </section>
+
+      <!-- Prototype Scope -->
+      <section class="panel panel-section" aria-label="Prototype scope">
+        <h2 class="panel-title">Prototype Scope</h2>
+        <div class="scope-columns">
+          <div class="scope-column">
+            <div class="scope-column-title">Current</div>
+            <ul class="capability-list">
+              <li>Project overview</li>
+              <li>Project analysis</li>
+              <li>Benchmarking</li>
+              <li>Project comparison</li>
+              <li>What-if analysis</li>
+              <li>User authentication</li>
+              <li>Feedback collection</li>
+            </ul>
+          </div>
+          <div class="scope-column">
+            <div class="scope-column-title">Future</div>
+            <ul class="capability-list">
+              <li>Project creation and editing</li>
+              <li>Project data management</li>
+              <li>User roles and permissions</li>
+              <li>Additional analytics / AI features</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/formatters.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dev.js"></script>
+</body>
+</html>

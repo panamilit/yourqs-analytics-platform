@@ -1,7 +1,12 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import (
+    FastAPI,
+    HTTPException,
+)
+from fastapi.middleware.cors import (
+    CORSMiddleware,
+)
 
 from app.core.config import get_settings
 from app.db.pool import (
@@ -9,9 +14,20 @@ from app.db.pool import (
     database_pool,
     open_database_pool,
 )
-from app.routes.projects import router as projects_router
-from app.routes.benchmarking import router as benchmarking_router
-from app.routes import comparison, what_if
+
+from app.routes.projects import (
+    router as projects_router,
+)
+from app.routes.benchmarking import (
+    router as benchmarking_router,
+)
+from app.routes import (
+    auth,
+    comparison,
+    feedback,
+    what_if,
+)
+
 
 settings = get_settings()
 
@@ -19,48 +35,74 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     open_database_pool()
+
     yield
+
     close_database_pool()
 
 
 app = FastAPI(
     title=settings.app_name,
-    version="1.0.0",
+    version="1.1.0",
     lifespan=lifespan,
 )
 
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-        "http://127.0.0.1:8000",
-        "http://localhost:8000",
-    ],
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(projects_router)
 
-app.include_router(benchmarking_router)
+app.include_router(
+    projects_router
+)
 
-app.include_router(comparison.router)
+app.include_router(
+    benchmarking_router
+)
 
-app.include_router(what_if.router)
+app.include_router(
+    comparison.router
+)
+
+app.include_router(
+    what_if.router
+)
+
+app.include_router(
+    auth.router
+)
+
+app.include_router(
+    feedback.router
+)
 
 
-@app.get("/health", tags=["Health"])
+@app.get(
+    "/health",
+    tags=["Health"],
+)
 def health() -> dict[str, str]:
     try:
         with database_pool.connection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT 1 AS result;")
+                cursor.execute(
+                    "SELECT 1 AS result;"
+                )
+
                 row = cursor.fetchone()
 
-        if not row or row["result"] != 1:
-            raise RuntimeError("Unexpected database response.")
+        if (
+            not row
+            or row["result"] != 1
+        ):
+            raise RuntimeError(
+                "Unexpected database response."
+            )
 
         return {
             "status": "healthy",

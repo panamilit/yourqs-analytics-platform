@@ -25,6 +25,12 @@ const NZD_FORMATTER_COMPACT = new Intl.NumberFormat("en-NZ", {
 
 const NUMBER_FORMATTER = new Intl.NumberFormat("en-NZ");
 
+const DATE_FORMATTER = new Intl.DateTimeFormat("en-NZ", {
+  day: "numeric",
+  month: "short",
+  year: "numeric"
+});
+
 /** Standard English ordinal suffix (1st, 2nd, 3rd, 4th, 11th, 21st, ...). */
 function ordinalSuffix(n) {
   const abs = Math.abs(n);
@@ -130,6 +136,15 @@ const Formatters = {
       return "N/A";
     }
     return String(value);
+  },
+
+  /** Format an ISO date/timestamp string as a short readable date, e.g.
+   *  "2026-01-12T04:00:00Z" -> "12 Jan 2026". */
+  date(value) {
+    if (!value) return "N/A";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return "N/A";
+    return DATE_FORMATTER.format(parsed);
   },
 
   /**

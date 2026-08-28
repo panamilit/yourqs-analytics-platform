@@ -156,12 +156,13 @@ select:focus-visible,
   flex-shrink: 0;
 }
 
-
 .sidebar-brand .header-brand-logo {
-  width: min(100%, 128px);
+  display: block;
+  width: min(100%, 112px);
   height: auto;
-  max-height: calc(var(--header-height) - var(--space-2));
+  max-height: calc(var(--header-height) - var(--space-3));
   object-fit: contain;
+  flex: 0 1 auto;
 }
 
 .sidebar-brand-mark {
@@ -289,6 +290,14 @@ select:focus-visible,
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-5);
+}
+
+.app-header .header-brand-logo {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex: 0 0 32px;
 }
 
 .header-title {
@@ -2050,6 +2059,356 @@ select:focus-visible,
 }
 
 /* ==========================================================================
+   Auth page (auth.html)
+   A standalone page outside the dashboard shell — no sidebar/header, just
+   a single centred card. Reuses existing tokens, .panel, .field, .btn and
+   .field-error rather than introducing a parallel visual language.
+   ========================================================================== */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: var(--color-bg);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.auth-brand-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin-bottom: var(--space-5);
+}
+
+.auth-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  height: 32px;
+}
+
+.auth-tab.is-active {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-alert {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-tint);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  font-size: 12.5px;
+}
+
+.auth-alert[hidden] {
+  display: none;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.auth-form[hidden] {
+  display: none;
+}
+
+.auth-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.auth-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-ink-faint);
+}
+
+.auth-password-field {
+  position: relative;
+}
+
+.auth-password-field input {
+  width: 100%;
+  padding-right: 56px;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--color-accent-dark);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+}
+
+.auth-password-toggle:hover {
+  text-decoration: underline;
+}
+
+.auth-switch {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+}
+
+.auth-switch button {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--color-accent-dark);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.auth-checking-state {
+  padding: var(--space-6) 0;
+}
+
+/* ==========================================================================
+   Developer Preview page (dev.html)
+   Reuses the existing dashboard shell, .panel/.panel-section, .field,
+   .auth-form/.auth-field-row/.auth-alert (from the auth page), .btn and
+   .status-badge rather than introducing a parallel visual language.
+   ========================================================================== */
+
+/* Textarea shares the same look as .field input/select, just multi-line. */
+.field textarea {
+  font-family: inherit;
+  font-size: 13.5px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  resize: vertical;
+  min-height: 96px;
+}
+
+.field textarea:focus {
+  border-color: var(--color-accent);
+}
+
+.field-hint-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.char-count {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  font-family: var(--font-mono);
+}
+
+/* Success variant for the shared .auth-alert banner, reused here for the
+   feedback form's confirmation message. */
+.auth-alert.is-success {
+  background: var(--color-accent-tint);
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+}
+
+/* Header user block: mirrors .sidebar-brand-text's stacked name/sub
+   pattern, sized for the header's existing .header-org avatar. */
+.header-user-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.header-user-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.header-user-sub {
+  font-size: 11px;
+  color: var(--color-ink-muted);
+}
+
+.header-user-sub:hover {
+  text-decoration: underline;
+}
+
+/* Feedback status badges — reuse the existing pill shape, restrained tones
+   matching the app's established 4-tier palette (favorable/neutral/caution
+   already used elsewhere for Benchmarking's position badge). */
+.status-feedback-new,
+.status-feedback-reviewed {
+  background: var(--color-neutral-tint);
+  color: var(--color-ink-muted);
+}
+
+.status-feedback-planned,
+.status-feedback-done {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+}
+
+.status-feedback-rejected {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+}
+
+/* Your Submissions list */
+
+.feedback-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.feedback-list[hidden] {
+  display: none;
+}
+
+.feedback-item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-sunken);
+}
+
+.feedback-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.feedback-item-category {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.feedback-item-message {
+  margin: 0 0 var(--space-2);
+  font-size: 13px;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.feedback-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11.5px;
+  color: var(--color-ink-muted);
+}
+
+/* Future Platform Development card — visually distinct via a left accent
+   border, still built from the same panel/typography tokens. */
+.future-card {
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  padding: var(--space-4) var(--space-5);
+}
+
+.future-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+
+.future-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.future-card-body {
+  margin: 0 0 var(--space-3);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}
+
+.capability-list {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-5);
+  font-size: 12.5px;
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Prototype Scope */
+
+.scope-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.scope-column-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-2);
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
@@ -2186,20 +2545,145 @@ select:focus-visible,
   .chart-container.is-tall {
     height: 340px;
   }
+  .auth-field-row {
+    grid-template-columns: 1fr;
+  }
+  .auth-card {
+    max-width: none;
+  }
+  .scope-columns {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .future-card {
+    padding: var(--space-4);
+  }
 }
 
 
 /* ==========================================================================
-   Interactive Chart.js canvases
+   Header account / authentication
    ========================================================================== */
 
-.chart-container canvas {
-  pointer-events: auto !important;
-  touch-action: manipulation;
+[hidden] {
+  display: none !important;
 }
 
-.chart-container canvas:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
+.header-account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: 5px 8px;
+  margin: -5px -8px;
+
   border-radius: var(--radius-sm);
+
+  color: inherit;
+  text-decoration: none;
+
+  transition:
+    background-color 120ms ease;
+}
+
+.header-account:hover {
+  background: var(--color-surface-sunken);
+}
+
+.header-user-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.header-user-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.header-user-sub {
+  font-size: 10.5px;
+  color: var(--color-ink-muted);
+}
+
+/* ==========================================================================
+   Developer Preview — shared submissions
+   ========================================================================== */
+
+.feedback-list-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.feedback-list-header .panel-subtitle { margin-bottom: 0; }
+.feedback-tabs {
+  display: inline-flex;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+}
+.feedback-tab {
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.feedback-tab:hover { color: var(--color-ink); }
+.feedback-tab.is-active {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+}
+.feedback-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.feedback-author-avatar {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.feedback-author-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.feedback-author-name-row { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.feedback-author-name {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--color-ink); font-size: 12.5px; font-weight: 600;
+}
+.feedback-author-company {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--color-ink-muted); font-size: 10.5px;
+}
+.feedback-you-badge {
+  flex-shrink: 0; padding: 1px 6px; border-radius: 999px;
+  background: var(--color-accent-tint); color: var(--color-accent-dark);
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+}
+@media (max-width: 640px) {
+  .feedback-list-header { flex-direction: column; align-items: stretch; }
+  .feedback-tabs { align-self: flex-start; }
 }

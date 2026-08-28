@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — YourQS Analytics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="auth-page">
+    <div class="panel auth-card">
+      <div class="auth-brand">
+        <span class="auth-brand-name">YourQS Analytics</span>
+      </div>
+
+      <!-- Checking an existing session before showing the form -->
+      <div class="ui-state auth-checking-state" id="auth-checking-state">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="ui-state-title">Checking your session…</div>
+      </div>
+
+      <div id="auth-form-area" hidden>
+        <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button type="button" class="auth-tab is-active" id="auth-tab-login" role="tab" aria-selected="true" aria-controls="auth-panel-login" data-mode="login">Sign in</button>
+          <button type="button" class="auth-tab" id="auth-tab-register" role="tab" aria-selected="false" aria-controls="auth-panel-register" tabindex="-1" data-mode="register">Create account</button>
+        </div>
+
+        <p class="auth-alert" id="auth-alert" role="alert" hidden></p>
+
+        <!-- Sign in -->
+        <form class="auth-form" id="auth-panel-login" role="tabpanel" aria-labelledby="auth-tab-login" novalidate>
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" name="email" autocomplete="username" required />
+            <span class="field-error" id="login-email-error" aria-live="polite" hidden></span>
+          </div>
+
+          <div class="field">
+            <label for="login-password">Password</label>
+            <div class="auth-password-field">
+              <input type="password" id="login-password" name="password" autocomplete="current-password" required />
+              <button type="button" class="auth-password-toggle" data-target="login-password" aria-label="Show password">Show</button>
+            </div>
+            <span class="field-error" id="login-password-error" aria-live="polite" hidden></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="login-submit-btn">Sign in</button>
+
+          <p class="auth-switch">
+            Don't have an account?
+            <button type="button" data-switch-to="register">Create account</button>
+          </p>
+        </form>
+
+        <!-- Create account -->
+        <form class="auth-form" id="auth-panel-register" role="tabpanel" aria-labelledby="auth-tab-register" hidden novalidate>
+          <div class="field">
+            <label for="register-name">Name</label>
+            <input type="text" id="register-name" name="name" autocomplete="name" required />
+            <span class="field-error" id="register-name-error" aria-live="polite" hidden></span>
+          </div>
+
+          <div class="field">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" name="email" autocomplete="username" required />
+            <span class="field-error" id="register-email-error" aria-live="polite" hidden></span>
+          </div>
+
+          <div class="auth-field-row">
+            <div class="field">
+              <label for="register-company">Company <span class="auth-optional">(optional)</span></label>
+              <input type="text" id="register-company" name="company" autocomplete="organization" />
+            </div>
+            <div class="field">
+              <label for="register-role">Role / Job title <span class="auth-optional">(optional)</span></label>
+              <input type="text" id="register-role" name="roleTitle" autocomplete="organization-title" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="register-password">Password</label>
+            <div class="auth-password-field">
+              <input type="password" id="register-password" name="password" autocomplete="new-password" required minlength="8" />
+              <button type="button" class="auth-password-toggle" data-target="register-password" aria-label="Show password">Show</button>
+            </div>
+            <span class="field-error" id="register-password-error" aria-live="polite" hidden></span>
+          </div>
+
+          <div class="field">
+            <label for="register-confirm-password">Confirm password</label>
+            <div class="auth-password-field">
+              <input type="password" id="register-confirm-password" name="confirmPassword" autocomplete="new-password" required />
+              <button type="button" class="auth-password-toggle" data-target="register-confirm-password" aria-label="Show password">Show</button>
+            </div>
+            <span class="field-error" id="register-confirm-password-error" aria-live="polite" hidden></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="register-submit-btn">Create account</button>
+
+          <p class="auth-switch">
+            Already have an account?
+            <button type="button" data-switch-to="login">Sign in</button>
+          </p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/auth-page.js"></script>
+</body>
+</html>

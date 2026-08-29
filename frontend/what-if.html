@@ -8,7 +8,8 @@
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
 </head>
 <body>
   
@@ -164,7 +165,7 @@
       <!-- Scenario adjustments: every scope is visible immediately -->
       <section class="filters-panel" id="wi-adjustments-panel" aria-label="Scenario adjustments" hidden>
         <h2 class="panel-title">Scenario Adjustments</h2>
-        <p class="panel-subtitle">Every cost scope for this project is listed below. Adjust any row — changes apply automatically. Positive values increase cost, negative values reduce it (-100% to +500%).</p>
+        <p class="panel-subtitle">Every cost scope for this project is listed below. Adjust any row - changes apply automatically. Positive values increase cost, negative values reduce it (-100% to +500%).</p>
 
         <div class="wi-scope-controls">
           <div class="field field-search">
@@ -209,7 +210,7 @@
         </section>
       </div>
 
-      <!-- Scope Cost Impact — wide diverging chart -->
+      <!-- Scope Cost Impact - wide diverging chart -->
       <section class="panel panel-section" id="wi-scope-impact-panel" aria-label="Scope cost impact" hidden>
         <h2 class="panel-title">Scope Cost Impact</h2>
         <p class="panel-subtitle">Cost difference introduced by each adjusted scope. Increases extend right, decreases extend left.</p>
@@ -233,7 +234,7 @@
         </section>
         <section class="panel panel-section" id="wi-distribution-panel" aria-label="Scenario cost distribution" hidden>
           <h2 class="panel-title panel-title-sm">Scenario Cost Distribution</h2>
-          <p class="panel-note">A separate chart from the Project Analysis Cost Distribution — this one reflects the current scenario.</p>
+          <p class="panel-note">A separate chart from the Project Analysis Cost Distribution - this one reflects the current scenario.</p>
           <div class="chart-container">
             <canvas id="wi-distribution-chart"></canvas>
             <p class="chart-fallback" id="wi-distribution-chart-fallback" hidden></p>

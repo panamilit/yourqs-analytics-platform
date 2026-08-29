@@ -129,14 +129,12 @@ select:focus-visible,
 
 .app-shell {
   display: grid;
-  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: var(--header-height) 1fr;
   grid-template-areas:
     "sidebar header"
     "sidebar main";
   min-height: 100vh;
-  width: 100%;
-  max-width: 100%;
 }
 
 /* ---- Sidebar ---- */
@@ -2435,7 +2433,7 @@ select:focus-visible,
 
 @media (max-width: 900px) {
   .app-shell {
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: 76px 1fr;
   }
   .sidebar-brand-text,
   .sidebar-nav a span.nav-label,

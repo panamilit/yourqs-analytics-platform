@@ -65,6 +65,12 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -123,12 +129,14 @@ select:focus-visible,
 
 .app-shell {
   display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   grid-template-rows: var(--header-height) 1fr;
   grid-template-areas:
     "sidebar header"
     "sidebar main";
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* ---- Sidebar ---- */
@@ -341,6 +349,7 @@ select:focus-visible,
   padding: var(--space-6) var(--space-5) var(--space-7);
   max-width: 1360px;
   width: 100%;
+  min-width: 0;
 }
 
 .page-heading {
@@ -593,6 +602,9 @@ select:focus-visible,
    ========================================================================== */
 
 .table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   position: relative;
 }
@@ -2423,7 +2435,7 @@ select:focus-visible,
 
 @media (max-width: 900px) {
   .app-shell {
-    grid-template-columns: 76px 1fr;
+    grid-template-columns: 76px minmax(0, 1fr);
   }
   .sidebar-brand-text,
   .sidebar-nav a span.nav-label,

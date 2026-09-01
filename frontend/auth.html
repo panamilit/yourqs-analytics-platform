@@ -83,6 +83,23 @@
           </div>
 
           <div class="field">
+            <label for="register-access-code">Access code</label>
+            <input
+              type="password"
+              id="register-access-code"
+              name="accessCode"
+              autocomplete="off"
+              required
+            />
+            <span
+              class="field-error"
+              id="register-access-code-error"
+              aria-live="polite"
+              hidden
+            ></span>
+          </div>
+
+          <div class="field">
             <label for="register-password">Password</label>
             <div class="auth-password-field">
               <input type="password" id="register-password" name="password" autocomplete="new-password" required minlength="8" />

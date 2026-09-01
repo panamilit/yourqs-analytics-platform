@@ -46,6 +46,8 @@ const AuthPage = (() => {
       registerEmailError: document.getElementById("register-email-error"),
       registerCompany: document.getElementById("register-company"),
       registerRole: document.getElementById("register-role"),
+      registerAccessCode: document.getElementById("register-access-code"),
+      registerAccessCodeError: document.getElementById("register-access-code-error"),
       registerPassword: document.getElementById("register-password"),
       registerPasswordError: document.getElementById("register-password-error"),
       registerConfirmPassword: document.getElementById("register-confirm-password"),
@@ -151,6 +153,7 @@ const AuthPage = (() => {
       [els.loginPassword, els.loginPasswordError],
       [els.registerName, els.registerNameError],
       [els.registerEmail, els.registerEmailError],
+      [els.registerAccessCode, els.registerAccessCodeError],
       [els.registerPassword, els.registerPasswordError],
       [els.registerConfirmPassword, els.registerConfirmPasswordError]
     ].forEach(([input, errorEl]) => {
@@ -193,6 +196,7 @@ const AuthPage = (() => {
     const email = els.registerEmail.value.trim();
     const company = els.registerCompany.value.trim();
     const roleTitle = els.registerRole.value.trim();
+    const accessCode = els.registerAccessCode.value.trim();
     const password = els.registerPassword.value;
     const confirmPassword = els.registerConfirmPassword.value;
 
@@ -206,6 +210,13 @@ const AuthPage = (() => {
       valid = false;
     } else if (!EMAIL_PATTERN.test(email)) {
       setFieldError(els.registerEmailError, "Enter a valid email address.");
+      valid = false;
+    }
+    if (!accessCode) {
+      setFieldError(
+        els.registerAccessCodeError,
+        "Access code is required."
+      );
       valid = false;
     }
     if (!password) {
@@ -227,7 +238,12 @@ const AuthPage = (() => {
     hideAlert();
     setLoading(els.registerSubmitBtn, true, "Creating account…");
 
-    const payload = { name, email, password };
+    const payload = {
+      name,
+      email,
+      password,
+      accessCode
+    };
     if (company) payload.company = company;
     if (roleTitle) payload.roleTitle = roleTitle;
 
@@ -256,6 +272,7 @@ const AuthPage = (() => {
       els.loginPasswordError,
       els.registerNameError,
       els.registerEmailError,
+      els.registerAccessCodeError,
       els.registerPasswordError,
       els.registerConfirmPasswordError
     ].forEach((el) => setFieldError(el, ""));

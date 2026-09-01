@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from app.dependencies.current_user import get_current_user
 
 from app.repositories.what_if_repository import (
     WhatIfRepository,
@@ -15,6 +17,7 @@ from app.services.what_if_service import (
 router = APIRouter(
     prefix="/api/what-if",
     tags=["What-if Analysis"],
+    dependencies=[Depends(get_current_user)],
 )
 
 repository = WhatIfRepository()

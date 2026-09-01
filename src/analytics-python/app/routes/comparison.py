@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from app.dependencies.current_user import get_current_user
+
 from pydantic import BaseModel, Field
 
 from app.repositories.comparison_repository import (
@@ -15,6 +18,7 @@ from app.services.comparison_service import (
 router = APIRouter(
     prefix="/api/comparison",
     tags=["Compare Projects"],
+    dependencies=[Depends(get_current_user)],
 )
 
 

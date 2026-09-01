@@ -1,6 +1,8 @@
 from typing import Literal
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
+
+from app.dependencies.current_user import get_current_user
 
 from app.repositories.projects_repository import (
     SORT_COLUMNS,
@@ -26,6 +28,7 @@ from app.services.project_details_service import (
 router = APIRouter(
     prefix="/api/projects",
     tags=["Projects"],
+    dependencies=[Depends(get_current_user)],
 )
 
 repository = ProjectsRepository()

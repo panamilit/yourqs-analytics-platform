@@ -445,6 +445,8 @@ const Api = {
                   : {}
               ),
 
+              ...(window.Auth?.getAuthorizationHeaders?.() || {}),
+
               ...headers
             },
 

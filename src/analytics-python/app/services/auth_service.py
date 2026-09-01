@@ -1,5 +1,7 @@
 from fastapi import HTTPException
 
+from app.core.config import get_settings
+
 from app.core.security import (
     create_access_token,
     hash_password,
@@ -15,6 +17,7 @@ from app.schemas.auth import (
     UserResponse,
 )
 
+settings = get_settings()
 
 class AuthService:
     def __init__(
@@ -28,6 +31,13 @@ class AuthService:
         self,
         request: RegisterRequest,
     ) -> AuthResponse:
+
+        if request.access_code != settings.registration_access_code:
+            raise HTTPException(
+                status_code=403,
+                detail="Invalid access code.",
+            )
+        
         email = request.email.lower().strip()
 
         existing = (

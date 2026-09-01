@@ -22,6 +22,12 @@ class RegisterRequest(BaseModel):
         max_length=128,
     )
 
+    access_code: str = Field(
+        min_length=1,
+        max_length=128,
+        validation_alias="accessCode",
+    )
+
     company: str | None = Field(
         default=None,
         max_length=150,

@@ -1,10 +1,7 @@
 /**
  * api.js
  * All HTTP communication with the FastAPI backend.
- * No rendering, no state, no business calculations —
- * just requests, responses, and error shaping.
  */
-
 
 class ApiError extends Error {
   constructor(
@@ -15,55 +12,30 @@ class ApiError extends Error {
       detail = null
     } = {}
   ) {
-    super(
-      message
-    );
+    super(message);
 
-    this.name =
-      "ApiError";
-
-    this.status =
-      status;
-
-    this.cause =
-      cause;
-
-    this.detail =
-      detail;
+    this.name = "ApiError";
+    this.status = status;
+    this.cause = cause;
+    this.detail = detail;
   }
 }
 
 
 const Api = {
-
-  /**
-   * Build the full URL for a given API path
-   * using the configured backend base URL.
-   */
-  buildUrl(
-    path,
-    params = {}
-  ) {
+  buildUrl(path, params = {}) {
     const base =
-      window.APP_CONFIG
-        .API_BASE_URL
-        .replace(
-          /\/+$/,
-          ""
-        );
-
-
-    const url =
-      new URL(
-        `${base}${path}`
+      window.APP_CONFIG.API_BASE_URL.replace(
+        /\/+$/,
+        ""
       );
 
+    const url = new URL(
+      `${base}${path}`
+    );
 
-    Object.entries(
-      params
-    ).forEach(
+    Object.entries(params).forEach(
       ([key, value]) => {
-
         if (
           value === null ||
           value === undefined ||
@@ -72,7 +44,6 @@ const Api = {
           return;
         }
 
-
         url.searchParams.set(
           key,
           value
@@ -80,160 +51,86 @@ const Api = {
       }
     );
 
-
     return url.toString();
   },
 
 
-  /* ================================================================
-     Projects
-     ================================================================ */
-
-  /**
-   * GET /api/projects/summary
-   */
   async getProjectsSummary(
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        "/api/projects/summary"
-      );
-
+    const url = this.buildUrl(
+      "/api/projects/summary"
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /**
-   * GET /api/projects
-   *
-   * filters:
-   * - search
-   * - min_floor_area
-   * - max_floor_area
-   * - levels
-   * - has_cost_data
-   * - analytics_ready
-   * - page
-   * - page_size
-   * - sort_by
-   * - sort_order
-   */
   async getProjects(
     filters = {},
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        "/api/projects",
-        filters
-      );
-
+    const url = this.buildUrl(
+      "/api/projects",
+      filters
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /**
-   * GET /api/projects/{project_id}/details
-   */
   async getProjectDetails(
     projectId,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        `/api/projects/${encodeURIComponent(
-          projectId
-        )}/details`
-      );
-
+    const url = this.buildUrl(
+      `/api/projects/${
+        encodeURIComponent(projectId)
+      }/details`
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /* ================================================================
-     Benchmarking
-     ================================================================ */
-
-  /**
-   * GET /api/benchmarking/projects/{project_id}
-   */
   async getProjectBenchmark(
     projectId,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        `/api/benchmarking/projects/${encodeURIComponent(
-          projectId
-        )}`
-      );
-
+    const url = this.buildUrl(
+      `/api/benchmarking/projects/${
+        encodeURIComponent(projectId)
+      }`
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /* ================================================================
-     Comparison
-     ================================================================ */
-
-  /**
-   * POST /api/comparison/projects
-   *
-   * body:
-   * {
-   *   projectIds: [...]
-   * }
-   */
   async compareProjects(
     projectIds,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        "/api/comparison/projects"
-      );
-
+    const url = this.buildUrl(
+      "/api/comparison/projects"
+    );
 
     return this._request(
       url,
       {
-        method:
-          "POST",
+        method: "POST",
 
         body: {
           projectIds
@@ -245,38 +142,21 @@ const Api = {
   },
 
 
-  /* ================================================================
-     What-if Analysis
-     ================================================================ */
-
-  /**
-   * POST /api/what-if/projects/{project_id}
-   *
-   * body:
-   * {
-   *   adjustments: [...]
-   * }
-   */
   async runWhatIfScenario(
     projectId,
     adjustments,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        `/api/what-if/projects/${encodeURIComponent(
-          projectId
-        )}`
-      );
-
+    const url = this.buildUrl(
+      `/api/what-if/projects/${
+        encodeURIComponent(projectId)
+      }`
+    );
 
     return this._request(
       url,
       {
-        method:
-          "POST",
+        method: "POST",
 
         body: {
           adjustments
@@ -288,19 +168,6 @@ const Api = {
   },
 
 
-  /* ================================================================
-     Generic API request
-     ================================================================ */
-
-  /**
-   * Generic request for endpoints outside the
-   * analytics-specific helpers.
-   *
-   * Used by:
-   * - authentication
-   * - feedback
-   * - future application-layer endpoints
-   */
   async request(
     path,
     {
@@ -310,11 +177,9 @@ const Api = {
       signal
     } = {}
   ) {
-    const url =
-      this.buildUrl(
-        path
-      );
-
+    const url = this.buildUrl(
+      path
+    );
 
     return this._request(
       url,
@@ -328,17 +193,6 @@ const Api = {
   },
 
 
-  /* ================================================================
-     Feedback
-     ================================================================ */
-
-  /**
-   * POST /api/feedback
-   *
-   * Requires Authorization header supplied by caller:
-   *
-   * Auth.getAuthorizationHeaders()
-   */
   async createFeedback(
     payload,
     {
@@ -349,35 +203,8 @@ const Api = {
     return this.request(
       "/api/feedback",
       {
-        method:
-          "POST",
-
-        body:
-          payload,
-
-        headers,
-
-        signal
-      }
-    );
-  },
-
-
-  /**
-   * GET /api/feedback
-   *
-   * Returns all submissions,
-   * including author information.
-   */
-  async getAllFeedback(
-    {
-      headers = {},
-      signal
-    } = {}
-  ) {
-    return this.request(
-      "/api/feedback",
-      {
+        method: "POST",
+        body: payload,
         headers,
         signal
       }
@@ -385,14 +212,6 @@ const Api = {
   },
 
 
-  /**
-   * GET /api/feedback/me
-   *
-   * Returns feedback belonging only
-   * to the current user.
-   *
-   * Kept because it may still be useful elsewhere.
-   */
   async getMyFeedback(
     {
       headers = {},
@@ -409,9 +228,72 @@ const Api = {
   },
 
 
-  /* ================================================================
-     Shared fetch wrapper
-     ================================================================ */
+  /**
+   * Multipart/FormData request.
+   *
+   * IMPORTANT:
+   * Do not manually set Content-Type here.
+   * The browser must create the multipart boundary.
+   */
+  async submitFormData(
+    path,
+    formData,
+    {
+      signal,
+      headers = {}
+    } = {}
+  ) {
+    const url = this.buildUrl(
+      path
+    );
+
+    let response;
+
+    try {
+      response = await fetch(
+        url,
+        {
+          method: "POST",
+
+          headers: {
+            Accept:
+              "application/json",
+
+            ...(
+              window.Auth
+                ?.getAuthorizationHeaders
+                ?.() || {}
+            ),
+
+            ...headers
+          },
+
+          body: formData,
+
+          signal
+        }
+      );
+    } catch (err) {
+      if (
+        err.name ===
+        "AbortError"
+      ) {
+        throw err;
+      }
+
+      throw new ApiError(
+        "Unable to reach the server. Check your connection and try again.",
+        {
+          cause: err
+        }
+      );
+    }
+
+    return this._handleResponse(
+      response
+    );
+  },
+
 
   async _request(
     url,
@@ -424,43 +306,44 @@ const Api = {
   ) {
     let response;
 
-
     try {
-      response =
-        await fetch(
-          url,
-          {
-            method,
+      response = await fetch(
+        url,
+        {
+          method,
 
-            headers: {
-              Accept:
-                "application/json",
+          headers: {
+            Accept:
+              "application/json",
 
-              ...(
-                body !== null
-                  ? {
-                      "Content-Type":
-                        "application/json"
-                    }
-                  : {}
-              ),
-
-              ...(window.Auth?.getAuthorizationHeaders?.() || {}),
-
-              ...headers
-            },
-
-            body:
+            ...(
               body !== null
-                ? JSON.stringify(
-                    body
-                  )
-                : undefined,
+                ? {
+                    "Content-Type":
+                      "application/json"
+                  }
+                : {}
+            ),
 
-            signal
-          }
-        );
+            ...(
+              window.Auth
+                ?.getAuthorizationHeaders
+                ?.() || {}
+            ),
 
+            ...headers
+          },
+
+          body:
+            body !== null
+              ? JSON.stringify(
+                  body
+                )
+              : undefined,
+
+          signal
+        }
+      );
     } catch (err) {
       if (
         err.name ===
@@ -469,46 +352,43 @@ const Api = {
         throw err;
       }
 
-
       throw new ApiError(
         "Unable to reach the server. Check your connection and try again.",
         {
-          cause:
-            err
+          cause: err
         }
       );
     }
 
+    return this._handleResponse(
+      response
+    );
+  },
 
-    if (
-      !response.ok
-    ) {
-      let detail =
-        null;
 
+  async _handleResponse(
+    response
+  ) {
+    if (!response.ok) {
+      let detail = null;
 
       try {
         const errorBody =
           await response.json();
 
-
         detail =
           errorBody?.message ??
           errorBody?.detail ??
           null;
-
       } catch (_) {
-        /*
-         * Response had no JSON body.
-         */
+        // No JSON body.
       }
-
 
       throw new ApiError(
         extractErrorMessage(
           detail
         ) ||
-        `Request failed with status ${response.status}.`,
+          `Request failed with status ${response.status}.`,
         {
           status:
             response.status,
@@ -518,16 +398,13 @@ const Api = {
       );
     }
 
-
     try {
       return await response.json();
-
     } catch (err) {
       throw new ApiError(
         "The server returned an unexpected response.",
         {
-          cause:
-            err
+          cause: err
         }
       );
     }
@@ -535,36 +412,12 @@ const Api = {
 };
 
 
-/**
- * FastAPI error responses can be:
- *
- * {
- *   "detail": "Invalid email or password."
- * }
- *
- * or validation arrays:
- *
- * {
- *   "detail": [
- *     {
- *       "loc": [...],
- *       "msg": "...",
- *       "type": "..."
- *     }
- *   ]
- * }
- *
- * Convert either shape into one readable message.
- */
 function extractErrorMessage(
   detail
 ) {
-  if (
-    !detail
-  ) {
+  if (!detail) {
     return "";
   }
-
 
   if (
     typeof detail ===
@@ -573,16 +426,12 @@ function extractErrorMessage(
     return detail;
   }
 
-
   if (
-    Array.isArray(
-      detail
-    ) &&
+    Array.isArray(detail) &&
     detail.length > 0
   ) {
     const first =
       detail[0];
-
 
     if (
       typeof first ===
@@ -590,7 +439,6 @@ function extractErrorMessage(
     ) {
       return first;
     }
-
 
     if (
       first &&
@@ -600,7 +448,6 @@ function extractErrorMessage(
       return first.msg;
     }
   }
-
 
   return "";
 }

@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import Any
+from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 
@@ -54,6 +55,13 @@ class FeasibilityService:
         self,
         request: FeasibilityRequest,
     ) -> FeasibilityResponse:
+        assessment_id = uuid4()
+
+        session_id = (
+            request.session_id
+            or uuid4()
+        )
+
         # ---------------------------------------------------------
         # Validate project-specific inputs
         # ---------------------------------------------------------
@@ -117,6 +125,8 @@ class FeasibilityService:
             return self._insufficient_response(
                 request=request,
                 comparables=comparables,
+                assessment_id=assessment_id,
+                session_id=session_id,
             )
 
         # ---------------------------------------------------------
@@ -249,8 +259,13 @@ class FeasibilityService:
         # Response
         # ---------------------------------------------------------
 
-        return FeasibilityResponse(
-            status="completed",
+        return self._log_and_return(
+            request=request,
+            response=FeasibilityResponse(
+                assessment_id=assessment_id,
+                session_id=session_id,
+
+                status="completed",
 
             project_type=(
                 request.project_type
@@ -338,6 +353,7 @@ class FeasibilityService:
                     "location, site conditions and scope."
                 ),
             ],
+            ),
         )
 
     # =============================================================
@@ -758,6 +774,8 @@ class FeasibilityService:
         self,
         request: FeasibilityRequest,
         comparables: list[dict[str, Any]],
+        assessment_id: UUID,
+        session_id: UUID,
     ) -> FeasibilityResponse:
         average_similarity = None
 
@@ -777,8 +795,13 @@ class FeasibilityService:
                 Decimal("0.01")
             )
 
-        return FeasibilityResponse(
-            status="insufficient_data",
+        return self._log_and_return(
+            request=request,
+            response=FeasibilityResponse(
+                assessment_id=assessment_id,
+                session_id=session_id,
+
+                status="insufficient_data",
 
             project_type=(
                 request.project_type
@@ -825,7 +848,26 @@ class FeasibilityService:
                     "for this project."
                 )
             ],
+            ),
         )
+
+    # =============================================================
+    # Assessment logging
+    # =============================================================
+
+    def _log_and_return(
+        self,
+        request: FeasibilityRequest,
+        response: FeasibilityResponse,
+    ) -> FeasibilityResponse:
+        self.repository.create_assessment_log(
+            assessment_id=response.assessment_id,
+            session_id=response.session_id,
+            request=request,
+            response=response,
+        )
+
+        return response
 
     # =============================================================
     # Formatting

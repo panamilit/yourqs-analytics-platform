@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -48,6 +49,7 @@ class FeasibilityScope(BaseModel):
     roofing: bool | None = None
     pool: bool | None = None
     outbuilding: bool | None = None
+
     secondary_dwelling: bool | None = None
     structural_complexity: bool | None = None
     electrical_upgrade: bool | None = None
@@ -55,6 +57,12 @@ class FeasibilityScope(BaseModel):
 
 
 class FeasibilityRequest(BaseModel):
+    # Optional so the existing frontend keeps working.
+    #
+    # Later the browser will generate one UUID per browser session
+    # and send the same session_id for repeated assessments.
+    session_id: UUID | None = None
+
     project_type: ProjectType
 
     area: FeasibilityArea
@@ -119,6 +127,15 @@ class FeasibilityAssessment(BaseModel):
 
 
 class FeasibilityResponse(BaseModel):
+    # Database identity of this specific assessment.
+    #
+    # Used by Detailed Review to link the customer request
+    # back to the exact automated assessment.
+    assessment_id: UUID
+
+    # Anonymous browser/session identity.
+    session_id: UUID
+
     status: Literal[
         "completed",
         "insufficient_data",

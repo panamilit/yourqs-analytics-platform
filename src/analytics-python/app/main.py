@@ -28,6 +28,10 @@ from app.routes import (
     what_if,
 )
 
+from app.routes.feasibility import (
+    router as feasibility_router,
+)
+
 
 settings = get_settings()
 
@@ -81,6 +85,9 @@ app.include_router(
     feedback.router
 )
 
+app.include_router(
+    feasibility_router
+)
 
 @app.get(
     "/health",

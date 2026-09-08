@@ -744,9 +744,7 @@ const FeasibilityPage = (() => {
         >
           Existing home floor area (m²)
 
-          <span class="fp-optional">
-            (approximate, for context)
-          </span>
+
         </label>
 
 
@@ -1060,7 +1058,7 @@ const FeasibilityPage = (() => {
 
       <p class="fp-step-subheading">
         These help match your project to similar historical work.
-        If you're not certain, that's fine - choose "Not sure".
+        If you're not certain - choose "Not sure".
       </p>
 
 
@@ -1387,10 +1385,6 @@ const FeasibilityPage = (() => {
               .join("")
           }
         </select>
-
-        <p class="fp-field-hint">
-          This is for context only and does not change your estimate.
-        </p>
       </div>
 
       <p

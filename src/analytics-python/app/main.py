@@ -32,6 +32,10 @@ from app.routes.feasibility import (
     router as feasibility_router,
 )
 
+from app.routes.feasibility_admin import (
+    router as feasibility_admin_router,
+)
+
 
 settings = get_settings()
 
@@ -88,6 +92,11 @@ app.include_router(
 app.include_router(
     feasibility_router
 )
+
+app.include_router(
+    feasibility_admin_router
+)
+
 
 @app.get(
     "/health",

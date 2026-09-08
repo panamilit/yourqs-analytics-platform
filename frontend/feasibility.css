@@ -115,6 +115,13 @@ input:focus-visible,
   border-bottom: 1px solid var(--fp-border);
 }
 
+.fp-logo {
+  display: block;
+  width: min(24vw, 112px);
+  height: auto;
+  object-fit: contain;
+}
+
 .fp-brand {
   font-family: var(--fp-font-display);
   font-size: 20px;
@@ -1200,6 +1207,9 @@ textarea.fp-text-input {
   }
   .fp-header {
     padding: var(--fp-space-4);
+  }
+  .fp-logo {
+    width: min(32vw, 100px);
   }
   .fp-hero {
     padding: var(--fp-space-6) var(--fp-space-4) var(--fp-space-5);

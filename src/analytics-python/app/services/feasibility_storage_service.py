@@ -187,3 +187,78 @@ class FeasibilityStorageService:
             return (
                 f"Storage error {exc.code}"
             )
+
+
+
+    def download(
+        self,
+        storage_path: str,
+    ) -> bytes:
+        encoded_bucket = quote(
+            self.bucket,
+            safe="",
+        )
+
+        encoded_path = quote(
+            storage_path,
+            safe="/",
+        )
+
+        url = (
+            f"{self.supabase_url}"
+            f"/storage/v1/object/authenticated/"
+            f"{encoded_bucket}/"
+            f"{encoded_path}"
+        )
+
+        request = Request(
+            url=url,
+            method="GET",
+            headers={
+                "Authorization": (
+                    f"Bearer "
+                    f"{self.service_role_key}"
+                ),
+                "apikey": (
+                    self.service_role_key
+                ),
+            },
+        )
+
+        try:
+            with urlopen(
+                request,
+                timeout=30,
+            ) as response:
+                return response.read()
+
+        except HTTPError as exc:
+            if exc.code == 404:
+                raise HTTPException(
+                    status_code=404,
+                    detail=(
+                        "Project document "
+                        "could not be found."
+                    ),
+                ) from exc
+
+            detail = self._read_error(
+                exc
+            )
+
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    "Unable to download "
+                    f"project document: {detail}"
+                ),
+            ) from exc
+
+        except URLError as exc:
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    "Unable to reach "
+                    "project file storage."
+                ),
+            ) from exc

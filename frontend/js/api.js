@@ -228,6 +228,329 @@ const Api = {
   },
 
 
+
+
+  /**
+   * Get all feedback submissions.
+   *
+   * Used by the Admin Panel.
+   */
+  async getAllFeedback(
+    {
+      headers = {},
+      signal
+    } = {}
+  ) {
+    return this.request(
+      "/api/feedback",
+      {
+        headers,
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Overview metrics.
+   */
+  async getFeasibilityAdminOverview(
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      "/api/feasibility/admin/overview",
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Paginated assessment logs.
+   */
+  async getFeasibilityAdminAssessments(
+    filters = {},
+    {
+      signal
+    } = {}
+  ) {
+    const url =
+      this.buildUrl(
+        "/api/feasibility/admin/assessments",
+        filters
+      );
+
+    return this._request(
+      url,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Single assessment details.
+   */
+  async getFeasibilityAdminAssessment(
+    assessmentId,
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      `/api/feasibility/admin/assessments/${
+        encodeURIComponent(
+          assessmentId
+        )
+      }`,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Paginated detailed review requests.
+   */
+  async getFeasibilityAdminReviewRequests(
+    filters = {},
+    {
+      signal
+    } = {}
+  ) {
+    const url =
+      this.buildUrl(
+        "/api/feasibility/admin/review-requests",
+        filters
+      );
+
+    return this._request(
+      url,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Single detailed review request.
+   */
+  async getFeasibilityAdminReviewRequest(
+    reviewRequestId,
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      `/api/feasibility/admin/review-requests/${
+        encodeURIComponent(
+          reviewRequestId
+        )
+      }`,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Update detailed review request status.
+   */
+  async updateFeasibilityAdminReviewStatus(
+    reviewRequestId,
+    status,
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      `/api/feasibility/admin/review-requests/${
+        encodeURIComponent(
+          reviewRequestId
+        )
+      }/status`,
+      {
+        method: "PATCH",
+
+        body: {
+          status
+        },
+
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Download a file stored in the private
+   * feasibility-review-files bucket.
+   *
+   * The backend performs the authenticated
+   * Storage request and returns the binary file.
+   */
+  async downloadFeasibilityReviewFile(
+    fileId,
+    fallbackFileName = "document",
+    {
+      signal
+    } = {}
+  ) {
+    const url =
+      this.buildUrl(
+        `/api/feasibility/admin/files/${
+          encodeURIComponent(
+            fileId
+          )
+        }/download`
+      );
+
+    let response;
+
+    try {
+      response =
+        await fetch(
+          url,
+          {
+            method: "GET",
+
+            headers: {
+              Accept:
+                "*/*",
+
+              ...(
+                window.Auth
+                  ?.getAuthorizationHeaders
+                  ?.() || {}
+              )
+            },
+
+            signal
+          }
+        );
+
+    } catch (err) {
+      if (
+        err.name ===
+        "AbortError"
+      ) {
+        throw err;
+      }
+
+      throw new ApiError(
+        "Unable to reach the server. Check your connection and try again.",
+        {
+          cause: err
+        }
+      );
+    }
+
+
+    if (
+      !response.ok
+    ) {
+      let detail =
+        null;
+
+      try {
+        const errorBody =
+          await response.json();
+
+        detail =
+          errorBody?.message ??
+          errorBody?.detail ??
+          null;
+
+      } catch (_) {
+        // Response was not JSON.
+      }
+
+
+      throw new ApiError(
+        extractErrorMessage(
+          detail
+        ) ||
+          `Request failed with status ${response.status}.`,
+        {
+          status:
+            response.status,
+
+          detail
+        }
+      );
+    }
+
+
+    const blob =
+      await response.blob();
+
+
+    const fileName =
+      getDownloadFileName(
+        response,
+        fallbackFileName
+      );
+
+
+    const objectUrl =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    try {
+      const anchor =
+        document.createElement(
+          "a"
+        );
+
+      anchor.href =
+        objectUrl;
+
+      anchor.download =
+        fileName;
+
+      anchor.style.display =
+        "none";
+
+
+      document.body.appendChild(
+        anchor
+      );
+
+
+      anchor.click();
+
+
+      anchor.remove();
+
+    } finally {
+      window.setTimeout(
+        () => {
+          URL.revokeObjectURL(
+            objectUrl
+          );
+        },
+        1000
+      );
+    }
+  },
+
+
   /**
    * Multipart/FormData request.
    *
@@ -450,4 +773,93 @@ function extractErrorMessage(
   }
 
   return "";
+}
+
+
+function getDownloadFileName(
+  response,
+  fallbackFileName
+) {
+  const disposition =
+    response.headers.get(
+      "Content-Disposition"
+    );
+
+
+  if (
+    !disposition
+  ) {
+    return (
+      fallbackFileName ||
+      "document"
+    );
+  }
+
+
+  /*
+   * RFC 5987:
+   * filename*=UTF-8''example.pdf
+   */
+  const encodedMatch =
+    disposition.match(
+      /filename\*=UTF-8''([^;]+)/i
+    );
+
+
+  if (
+    encodedMatch &&
+    encodedMatch[1]
+  ) {
+    try {
+      return decodeURIComponent(
+        encodedMatch[1]
+      );
+
+    } catch (_) {
+      return encodedMatch[1];
+    }
+  }
+
+
+  /*
+   * Standard:
+   * filename="example.pdf"
+   */
+  const quotedMatch =
+    disposition.match(
+      /filename="([^"]+)"/i
+    );
+
+
+  if (
+    quotedMatch &&
+    quotedMatch[1]
+  ) {
+    return quotedMatch[1];
+  }
+
+
+  /*
+   * Standard without quotes:
+   * filename=example.pdf
+   */
+  const plainMatch =
+    disposition.match(
+      /filename=([^;]+)/i
+    );
+
+
+  if (
+    plainMatch &&
+    plainMatch[1]
+  ) {
+    return plainMatch[1]
+      .trim();
+  }
+
+
+  return (
+    fallbackFileName ||
+    "document"
+  );
 }

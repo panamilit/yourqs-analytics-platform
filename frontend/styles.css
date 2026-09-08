@@ -1,10 +1,3 @@
-/* ==========================================================================
-   YourQS Analytics — design tokens
-   Palette: deep navy ink + paper-neutral background + steel-teal accent.
-   Type: IBM Plex Sans for UI text, IBM Plex Mono for tabular figures —
-   a nod to survey instruments and measured data.
-   ========================================================================== */
-
 :root {
   /* Color */
   --color-bg: #f5f6f4;
@@ -789,7 +782,7 @@ select:focus-visible,
 
 /* The current section's sidebar item can be both "active" (current page
    context) and "disabled" (no standalone destination without a project id)
-   at once — keep the active styling on top in that case. */
+   at once - keep the active styling on top in that case. */
 .sidebar-nav a.is-active.is-disabled {
   color: var(--color-sidebar-text-active);
   opacity: 1;
@@ -1227,8 +1220,8 @@ select:focus-visible,
 /* ==========================================================================
    Benchmarking page
    Reuses .panel, .summary-card, .info-grid, .bar-chart and .projects-table
-   from the existing design system. Only genuinely new concepts — the
-   position badge and percentile scale — get new, restrained styling built
+   from the existing design system. Only genuinely new concepts - the
+   position badge and percentile scale - get new, restrained styling built
    from the same 4-tier semantic palette already used for status badges.
    ========================================================================== */
 
@@ -1441,8 +1434,8 @@ select:focus-visible,
    Compare Projects page
    Reuses .filters-panel, .field, .panel, .projects-table, .bar-chart and
    the existing chart colour tokens. Each selected project gets a consistent
-   identity colour (chart-1..4) shown alongside its name everywhere — never
-   colour alone — in chips, table headers, and chart bars.
+   identity colour (chart-1..4) shown alongside its name everywhere - never
+   colour alone - in chips, table headers, and chart bars.
    ========================================================================== */
 
 /* Search dropdown */
@@ -1728,7 +1721,7 @@ select:focus-visible,
    Reuses .filters-panel, .field, .panel, .projects-table,
    .project-picker-results and existing tokens throughout. New here: the
    live scope list with inline step/number/slider controls, the sticky
-   before/after summary table, the waterfall, and the margin dumbbell —
+   before/after summary table, the waterfall, and the margin dumbbell -
    deliberately not more horizontal bars.
    ========================================================================== */
 
@@ -2043,7 +2036,7 @@ select:focus-visible,
 }
 
 /* Shown in place of a canvas when a chart cannot render (Chart.js
-   unavailable, or a chart-specific error) — never leaves blank space. */
+   unavailable, or a chart-specific error) - never leaves blank space. */
 .chart-fallback {
   display: flex;
   align-items: center;
@@ -2064,7 +2057,7 @@ select:focus-visible,
 
 /* ==========================================================================
    Auth page (auth.html)
-   A standalone page outside the dashboard shell — no sidebar/header, just
+   A standalone page outside the dashboard shell - no sidebar/header, just
    a single centred card. Reuses existing tokens, .panel, .field, .btn and
    .field-error rather than introducing a parallel visual language.
    ========================================================================== */
@@ -2283,7 +2276,7 @@ select:focus-visible,
   text-decoration: underline;
 }
 
-/* Feedback status badges — reuse the existing pill shape, restrained tones
+/* Feedback status badges - reuse the existing pill shape, restrained tones
    matching the app's established 4-tier palette (favorable/neutral/caution
    already used elsewhere for Benchmarking's position badge). */
 .status-feedback-new,
@@ -2354,7 +2347,7 @@ select:focus-visible,
   color: var(--color-ink-muted);
 }
 
-/* Future Platform Development card — visually distinct via a left accent
+/* Future Platform Development card - visually distinct via a left accent
    border, still built from the same panel/typography tokens. */
 .future-card {
   border: 1px solid var(--color-border);
@@ -2613,7 +2606,7 @@ select:focus-visible,
 }
 
 /* ==========================================================================
-   Developer Preview — shared submissions
+   Developer Preview - shared submissions
    ========================================================================== */
 
 .feedback-list-header {
@@ -2690,4 +2683,707 @@ select:focus-visible,
 @media (max-width: 640px) {
   .feedback-list-header { flex-direction: column; align-items: stretch; }
   .feedback-tabs { align-self: flex-start; }
+}
+
+
+
+
+/* ==========================================================================
+   Admin Panel
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Main tabs
+   -------------------------------------------------------------------------- */
+
+.admin-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  height: 34px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-tab:hover {
+  color: var(--color-ink);
+}
+
+.admin-tab.is-active {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-tab-panel[hidden] {
+  display: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   Section heading
+   -------------------------------------------------------------------------- */
+
+.admin-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.admin-section-heading h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.admin-section-heading p {
+  margin-top: var(--space-1);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}
+
+
+/* --------------------------------------------------------------------------
+   Overview KPIs
+   -------------------------------------------------------------------------- */
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.admin-kpi-grid-secondary {
+  margin-bottom: var(--space-5);
+}
+
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-overview-grid .panel {
+  min-width: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Overview stat rows
+   -------------------------------------------------------------------------- */
+
+.admin-stat-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}
+
+.admin-stat-row:first-child {
+  padding-top: 0;
+}
+
+.admin-stat-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-stat-row strong {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+
+/* --------------------------------------------------------------------------
+   Distribution bars
+   -------------------------------------------------------------------------- */
+
+.admin-distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-distribution-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-distribution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 12.5px;
+  color: var(--color-ink);
+}
+
+.admin-distribution-header strong {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.admin-distribution-track {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+}
+
+.admin-distribution-fill {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+
+.admin-empty-inline {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+}
+
+
+/* --------------------------------------------------------------------------
+   Feasibility sub tabs
+   -------------------------------------------------------------------------- */
+
+.admin-subtabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-subtab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 38px;
+  padding: 0 var(--space-3);
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-subtab:hover {
+  color: var(--color-ink);
+}
+
+.admin-subtab.is-active {
+  color: var(--color-accent-dark);
+  border-bottom-color: var(--color-accent);
+}
+
+.admin-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-danger);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-count-badge[hidden] {
+  display: none;
+}
+
+.admin-feasibility-panel[hidden] {
+  display: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   Admin tables
+   -------------------------------------------------------------------------- */
+
+.admin-table {
+  min-width: 1120px;
+}
+
+.admin-table tbody td {
+  vertical-align: middle;
+}
+
+.admin-table-sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-ink-muted);
+}
+
+.admin-customer-name {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+
+/* --------------------------------------------------------------------------
+   Feasibility verdict badges
+   -------------------------------------------------------------------------- */
+
+.admin-verdict-feasible {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+}
+
+.admin-verdict-borderline {
+  background: var(--color-warn-tint);
+  color: var(--color-warn);
+}
+
+.admin-verdict-unlikely {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+}
+
+
+/* --------------------------------------------------------------------------
+   Confidence badges
+   -------------------------------------------------------------------------- */
+
+.admin-confidence-high {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+}
+
+.admin-confidence-medium {
+  background: var(--color-neutral-tint);
+  color: var(--color-ink-muted);
+}
+
+.admin-confidence-low {
+  background: var(--color-warn-tint);
+  color: var(--color-warn);
+}
+
+.admin-confidence-insufficient {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+}
+
+
+/* --------------------------------------------------------------------------
+   Review request badges
+   -------------------------------------------------------------------------- */
+
+.admin-review-linked {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+}
+
+.admin-status-new {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+}
+
+.admin-status-reviewing {
+  background: var(--color-warn-tint);
+  color: var(--color-warn);
+}
+
+.admin-status-contacted {
+  background: var(--color-neutral-tint);
+  color: var(--color-ink-muted);
+}
+
+.admin-status-completed {
+  background: var(--color-accent-tint);
+  color: var(--color-accent-dark);
+}
+
+.admin-status-closed {
+  background: var(--color-surface-sunken);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-border);
+}
+
+
+/* --------------------------------------------------------------------------
+   Drawer
+   -------------------------------------------------------------------------- */
+
+body.admin-drawer-open {
+  overflow: hidden;
+}
+
+.admin-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(22, 35, 58, 0.32);
+}
+
+.admin-drawer-backdrop[hidden] {
+  display: none;
+}
+
+.admin-drawer {
+  position: fixed;
+  z-index: 41;
+  top: 0;
+  right: 0;
+  width: min(680px, 92vw);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow:
+    -12px 0 36px rgba(22, 35, 58, 0.14);
+}
+
+.admin-drawer[hidden] {
+  display: none;
+}
+
+.admin-drawer-header {
+  flex-shrink: 0;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-drawer-eyebrow {
+  margin-bottom: 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+}
+
+.admin-drawer-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.admin-drawer-close {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-drawer-close:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-ink);
+}
+
+.admin-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
+
+/* --------------------------------------------------------------------------
+   Drawer detail sections
+   -------------------------------------------------------------------------- */
+
+.admin-detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.admin-detail-section {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-detail-section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.admin-detail-section h3 {
+  margin: 0 0 var(--space-4);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-detail-item {
+  min-width: 0;
+}
+
+.admin-detail-label {
+  margin-bottom: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  color: var(--color-ink-muted);
+}
+
+.admin-detail-value {
+  font-size: 12.5px;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-muted {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+}
+
+.admin-json-block {
+  max-height: 420px;
+  overflow: auto;
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+
+/* --------------------------------------------------------------------------
+   Review status controls
+   -------------------------------------------------------------------------- */
+
+.admin-review-status-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.admin-review-status-header h3 {
+  margin-bottom: 2px;
+}
+
+.admin-status-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.admin-status-control select {
+  height: 30px;
+  min-width: 130px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Review documents
+   -------------------------------------------------------------------------- */
+
+.admin-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.admin-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+}
+
+.admin-file-info {
+  min-width: 0;
+}
+
+.admin-file-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.admin-file-meta {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+
+/* --------------------------------------------------------------------------
+   Improve disabled buttons
+   -------------------------------------------------------------------------- */
+
+.btn:disabled,
+.admin-tab:disabled,
+.admin-subtab:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .admin-kpi-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 760px) {
+  .admin-section-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-tabs {
+    width: 100%;
+  }
+
+  .admin-tab {
+    flex: 1 0 auto;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-subtabs {
+    overflow-x: auto;
+  }
+
+  .admin-drawer {
+    width: 100vw;
+  }
+
+  .admin-drawer-header {
+    padding:
+      var(--space-4);
+  }
+
+  .admin-drawer-body {
+    padding:
+      var(--space-4);
+  }
+
+  .admin-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-review-status-header {
+    flex-direction: column;
+  }
+
+  .admin-status-control {
+    width: 100%;
+  }
+
+  .admin-status-control select {
+    flex: 1;
+  }
+
+  .admin-file-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

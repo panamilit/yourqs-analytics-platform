@@ -12,9 +12,6 @@ from app.schemas.feasibility import (
 
 
 class FeasibilityRepository:
-    # ==========================================================
-    # Historical comparable candidates
-    # ==========================================================
 
     def get_candidates(
         self,
@@ -85,9 +82,7 @@ class FeasibilityRepository:
 
         return rows
 
-    # ==========================================================
-    # Assessment logging
-    # ==========================================================
+
 
     def create_assessment_log(
         self,
@@ -287,9 +282,6 @@ class FeasibilityRepository:
 
             connection.commit()
 
-    # ==========================================================
-    # Assessment lookup for review requests
-    # ==========================================================
 
     def get_assessment_log(
         self,

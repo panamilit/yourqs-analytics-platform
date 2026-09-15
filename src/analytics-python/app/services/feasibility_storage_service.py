@@ -161,7 +161,7 @@ class FeasibilityStorageService:
             URLError,
         ):
             # Cleanup failure must not mask the original
-            # submission/upload error.
+            # submission/upload error
             pass
 
     @staticmethod

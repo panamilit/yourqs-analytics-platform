@@ -145,9 +145,6 @@ class FeasibilityReviewService:
 
         review_request_id = uuid4()
 
-        # ------------------------------------------------------
-        # Create lead first
-        # ------------------------------------------------------
 
         self.review_repository.create_review_request(
             review_request_id=(
@@ -238,14 +235,7 @@ class FeasibilityReviewService:
                 )
 
         except Exception:
-            # --------------------------------------------------
-            # Compensating cleanup
-            #
-            # If one upload fails halfway through:
-            # - remove already-uploaded Storage objects
-            # - delete the review request
-            # - file metadata disappears through ON DELETE CASCADE
-            # --------------------------------------------------
+
 
             self.storage_service.remove(
                 uploaded_paths

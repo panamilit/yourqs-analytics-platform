@@ -154,9 +154,7 @@ class ComparableEngine:
         weighted_score = Decimal("0")
         total_weight = Decimal("0")
 
-        # ---------------------------------------------------------
-        # Area
-        # ---------------------------------------------------------
+
 
         area_weight = weights["area"]
 
@@ -174,9 +172,7 @@ class ComparableEngine:
 
         total_weight += area_weight
 
-        # ---------------------------------------------------------
-        # Structured numeric features
-        # ---------------------------------------------------------
+
 
         numeric_features = {
             "levels": levels,
@@ -223,17 +219,7 @@ class ComparableEngine:
             / total_weight
         )
 
-        # ---------------------------------------------------------
-        # Positive historical scope evidence
-        #
-        # FALSE in a notes-derived feature means
-        # "not mentioned", not necessarily "absent".
-        #
-        # Therefore:
-        # - requested TRUE + historical mention -> bonus
-        # - requested TRUE + no mention -> no penalty
-        # - requested FALSE -> feature ignored
-        # ---------------------------------------------------------
+
 
         bonus = Decimal("0")
 
@@ -272,15 +258,7 @@ class ComparableEngine:
             + bonus
         )
 
-        # ---------------------------------------------------------
-        # Historical category relevance
-        #
-        # For pure Extension assessments, historical pure Extension
-        # projects are the strongest evidence.
-        #
-        # Renovation + Extension projects are still useful, but are
-        # slightly less directly comparable.
-        # ---------------------------------------------------------
+
 
         category_multiplier = (
             self._category_multiplier(
@@ -293,21 +271,14 @@ class ComparableEngine:
 
         similarity *= category_multiplier
 
-        # ---------------------------------------------------------
-        # Scope exclusions
-        #
-        # Historical notes containing exclusions make text-derived
-        # scope features slightly less certain.
-        # ---------------------------------------------------------
+
 
         if candidate.get(
             "has_scope_exclusions"
         ):
             similarity *= Decimal("0.97")
 
-        # ---------------------------------------------------------
-        # Clamp to 0..1
-        # ---------------------------------------------------------
+
 
         return max(
             Decimal("0"),

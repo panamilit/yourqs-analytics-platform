@@ -62,9 +62,7 @@ class FeasibilityService:
             or uuid4()
         )
 
-        # ---------------------------------------------------------
-        # Validate project-specific inputs
-        # ---------------------------------------------------------
+
 
         pricing_area = self._get_pricing_area(
             request
@@ -76,9 +74,7 @@ class FeasibilityService:
             )
         )
 
-        # ---------------------------------------------------------
-        # Historical candidate pool
-        # ---------------------------------------------------------
+
 
         categories = self.CATEGORY_MAP[
             request.project_type
@@ -90,9 +86,6 @@ class FeasibilityService:
             )
         )
 
-        # ---------------------------------------------------------
-        # Comparable scoring
-        # ---------------------------------------------------------
 
         comparables = (
             self.comparable_engine.find_comparables(
@@ -117,9 +110,6 @@ class FeasibilityService:
             )
         )
 
-        # ---------------------------------------------------------
-        # Insufficient historical evidence
-        # ---------------------------------------------------------
 
         if len(comparables) < self.MIN_COMPARABLES:
             return self._insufficient_response(
@@ -129,9 +119,6 @@ class FeasibilityService:
                 session_id=session_id,
             )
 
-        # ---------------------------------------------------------
-        # Weighted price distribution
-        # ---------------------------------------------------------
 
         low_per_sqm = (
             self._weighted_percentile(
@@ -169,9 +156,6 @@ class FeasibilityService:
             * high_per_sqm
         )
 
-        # ---------------------------------------------------------
-        # Confidence
-        # ---------------------------------------------------------
 
         average_similarity = (
             sum(
@@ -224,9 +208,6 @@ class FeasibilityService:
             confidence = "medium"
             confidence_label = "Medium Confidence"
 
-        # ---------------------------------------------------------
-        # Budget
-        # ---------------------------------------------------------
 
         budget_assessment = None
 
@@ -241,9 +222,7 @@ class FeasibilityService:
                 )
             )
 
-        # ---------------------------------------------------------
-        # Human-readable assessment
-        # ---------------------------------------------------------
+
 
         matched_scope_characteristics = (
             self._get_matched_scope_characteristics(
@@ -255,9 +234,6 @@ class FeasibilityService:
             budget_assessment
         )
 
-        # ---------------------------------------------------------
-        # Response
-        # ---------------------------------------------------------
 
         return self._log_and_return(
             request=request,
@@ -356,9 +332,7 @@ class FeasibilityService:
             ),
         )
 
-    # =============================================================
-    # Project validation
-    # =============================================================
+
 
     def _get_pricing_area(
         self,
@@ -411,9 +385,7 @@ class FeasibilityService:
 
         return "affected_area"
 
-    # =============================================================
-    # Weighted percentile
-    # =============================================================
+
 
     def _weighted_percentile(
         self,
@@ -474,9 +446,7 @@ class FeasibilityService:
 
         return values[-1][0]
 
-    # =============================================================
-    # Confidence
-    # =============================================================
+
 
     def _calculate_confidence_score(
         self,
@@ -487,9 +457,7 @@ class FeasibilityService:
         typical_per_sqm: Decimal,
         price_values: list[Decimal],
     ) -> int:
-        # ---------------------------------------------------------
-        # Sample score: 0-30
-        # ---------------------------------------------------------
+
 
         sample_score = min(
             Decimal("30"),
@@ -502,18 +470,13 @@ class FeasibilityService:
             * Decimal("30"),
         )
 
-        # ---------------------------------------------------------
-        # Similarity score: 0-45
-        # ---------------------------------------------------------
+
 
         similarity_score = (
             average_similarity
             * Decimal("45")
         )
 
-        # ---------------------------------------------------------
-        # Spread score: 0-25
-        # ---------------------------------------------------------
 
         if typical_per_sqm <= 0:
             spread_score = Decimal("0")
@@ -597,9 +560,7 @@ class FeasibilityService:
             "Insufficient Evidence",
         )
 
-    # =============================================================
-    # Budget
-    # =============================================================
+
 
     def _assess_budget(
         self,
@@ -656,9 +617,7 @@ class FeasibilityService:
             verdict_label=verdict_label,
         )
 
-    # =============================================================
-    # Public explanation
-    # =============================================================
+
 
     def _build_summary(
         self,
@@ -766,9 +725,7 @@ class FeasibilityService:
 
         return characteristics
 
-    # =============================================================
-    # Insufficient evidence
-    # =============================================================
+
 
     def _insufficient_response(
         self,
@@ -851,9 +808,7 @@ class FeasibilityService:
             ),
         )
 
-    # =============================================================
-    # Assessment logging
-    # =============================================================
+
 
     def _log_and_return(
         self,
@@ -869,9 +824,6 @@ class FeasibilityService:
 
         return response
 
-    # =============================================================
-    # Formatting
-    # =============================================================
 
     @staticmethod
     def _decimal(

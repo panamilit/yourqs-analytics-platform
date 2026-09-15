@@ -11,9 +11,6 @@ class Settings(BaseSettings):
     app_name: str = "YourQS Analytics API"
     app_env: str = "development"
 
-    # ==========================================================
-    # Database
-    # ==========================================================
 
     database_host: str
     database_port: int = 5432
@@ -32,18 +29,12 @@ class Settings(BaseSettings):
         ge=1,
     )
 
-    # ==========================================================
-    # CORS
-    # ==========================================================
 
     cors_origins: str = (
         "http://127.0.0.1:5500,"
         "http://localhost:5500"
     )
 
-    # ==========================================================
-    # Prototype authentication
-    # ==========================================================
 
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
@@ -55,13 +46,6 @@ class Settings(BaseSettings):
 
     registration_access_code: str
 
-    # ==========================================================
-    # Supabase Storage
-    #
-    # IMPORTANT:
-    # Service role key is BACKEND ONLY.
-    # Never expose it to frontend JavaScript.
-    # ==========================================================
 
     supabase_url: str
     supabase_service_role_key: str

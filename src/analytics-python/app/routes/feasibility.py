@@ -44,9 +44,6 @@ router = APIRouter(
 )
 
 
-# ==============================================================
-# Dependencies / services
-# ==============================================================
 
 feasibility_repository = (
     FeasibilityRepository()
@@ -84,9 +81,6 @@ review_service = (
 )
 
 
-# ==============================================================
-# Public automated feasibility assessment
-# ==============================================================
 
 @router.post(
     "/assess",
@@ -101,11 +95,6 @@ def assess_feasibility(
     )
 
 
-# ==============================================================
-# Public detailed review request
-#
-# multipart/form-data because it can include project files.
-# ==============================================================
 
 @router.post(
     "/review-requests",

@@ -127,13 +127,11 @@ class FeasibilityAssessment(BaseModel):
 
 
 class FeasibilityResponse(BaseModel):
-    # Database identity of this specific assessment.
-    #
+    # Database identity of this specific assessment
     # Used by Detailed Review to link the customer request
-    # back to the exact automated assessment.
+    # back to the exact automated assessment
     assessment_id: UUID
 
-    # Anonymous browser/session identity.
     session_id: UUID
 
     status: Literal[

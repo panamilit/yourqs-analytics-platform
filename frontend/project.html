@@ -27,7 +27,7 @@
           <li><a href="#" data-nav id="nav-benchmarking-link"><span class="nav-label">Benchmarking</span></a></li>
           <li><a href="compare.html" data-nav><span class="nav-label">Compare Projects</span></a></li>
           <li><a href="what-if.html" data-nav><span class="nav-label">What-if Analysis</span></a></li>
-          <li><a href="index.html" data-nav><span class="nav-label">Feasibility</span></a></li>
+          <li><a href="#" data-nav class="is-disabled" tabindex="-1"><span class="nav-label">Feasibility</span><span class="nav-soon">Soon</span></a></li>
           <li><a href="dev.html" data-nav><span class="nav-label">Admin Panel</span></a></li>
         </ul>
       </nav>
@@ -93,7 +93,7 @@
 
     <!-- Main -->
     <main class="app-main">
-      <a class="back-link" href="platform.html">
+      <a class="back-link" href="index.html">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -119,13 +119,13 @@
         <div class="panel ui-state" id="detail-state-missing-id" hidden>
           <div class="ui-state-title">No project selected</div>
           <p class="ui-state-body">This page needs a project id in the URL. Head back to Projects and choose a project to analyse.</p>
-          <a class="btn btn-primary" href="platform.html">Back to Projects</a>
+          <a class="btn btn-primary" href="index.html">Back to Projects</a>
         </div>
 
         <div class="panel ui-state" id="detail-state-not-found" hidden>
           <div class="ui-state-title">Project not found</div>
           <p class="ui-state-body">We couldn't find a project matching this id. It may have been removed, or the link may be incorrect.</p>
-          <a class="btn btn-primary" href="platform.html">Back to Projects</a>
+          <a class="btn btn-primary" href="index.html">Back to Projects</a>
         </div>
 
         <div class="panel ui-state" id="detail-state-error" role="alert" hidden>

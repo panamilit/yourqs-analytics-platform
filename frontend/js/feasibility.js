@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const FeasibilityPage = (() => {
   const FLOWS = {
+    renovation_and_extension: ["type", "renovation_details", "extension_details", "budget", "review"],
     new_build: [
       "type",
       "details",
@@ -43,6 +44,8 @@ const FeasibilityPage = (() => {
 
 
   const STEP_TITLES = {
+    renovation_details: "Renovation",
+    extension_details: "Extension",
     type: "What are you planning?",
     details: "Project details",
     property: "Property details",
@@ -232,6 +235,8 @@ const FeasibilityPage = (() => {
       projectType: null,
 
       data: {
+        renovation: createCombinedPart(),
+        extension: createCombinedPart(),
         floorArea: null,
 
         existingFloorArea: null,
@@ -423,6 +428,8 @@ const FeasibilityPage = (() => {
 
 
   const STEP_RENDERERS = {
+    renovation_details: () => renderCombinedPart("renovation"),
+    extension_details: () => renderCombinedPart("extension"),
     type:
       renderTypeStep,
 
@@ -442,6 +449,57 @@ const FeasibilityPage = (() => {
       renderReviewStep
   };
 
+
+  function createCombinedPart() {
+    return { existingFloorArea: null, affectedArea: null, levels: 1, bathrooms: 1, kitchens: 1, scope: {} };
+  }
+
+  function renderCombinedPart(partName) {
+    const part = state.data[partName];
+    const title = partName === "renovation" ? "Renovation" : "Extension";
+    const fields = [
+      ["existingFloorArea", "Existing home floor area (m², optional)", 1],
+      ["affectedArea", partName === "renovation" ? "Existing area being renovated (m²)" : "New floor area being added (m²)", 1],
+      ["levels", "Levels involved", 1],
+      ["bathrooms", "Bathrooms added or affected", 0],
+      ["kitchens", "Kitchens added or affected", 0]
+    ];
+    return `
+      <h2 class="fp-step-heading">${title} details</h2>
+      <p class="fp-step-subheading">Enter only the ${partName} work here. Include shared work in one section only.</p>
+      ${fields.map(([field, label, min]) => `
+        <div class="fp-field">
+          <label class="fp-field-label" for="fp-combined-${field}">${label}</label>
+          <input class="fp-text-input" type="number" id="fp-combined-${field}"
+            data-part-field="${field}" min="${min}" step="${field.includes("Area") ? "any" : "1"}" value="${part[field] ?? ""}" />
+        </div>`).join("")}
+      <h3 class="fp-step-heading">${title} scope</h3>
+      ${SCOPE_QUESTIONS[partName].map(({field, label}) => `
+        <div class="fp-field">
+          <label class="fp-field-label" for="fp-combined-${field}">${label}</label>
+          <select class="fp-text-input" id="fp-combined-${field}" data-part-scope="${field}">
+            ${[["", "Not sure"], ["true", "Yes"], ["false", "No"]].map(([value, text]) => `
+              <option value="${value}" ${String(part.scope[field] ?? "") === value ? "selected" : ""}>${text}</option>
+            `).join("")}
+          </select>
+        </div>`).join("")}
+      <p class="fp-field-error" id="fp-step-error" role="alert" hidden></p>`;
+  }
+
+  function wireCombinedPart(partName) {
+    const part = state.data[partName];
+    els.stepContent.querySelectorAll("[data-part-field]").forEach(input => {
+      input.addEventListener("input", () => {
+        part[input.dataset.partField] = input.value === "" ? null : Number(input.value);
+        clearStepError();
+      });
+    });
+    els.stepContent.querySelectorAll("[data-part-scope]").forEach(input => {
+      input.addEventListener("change", () => {
+        part.scope[input.dataset.partScope] = input.value === "" ? null : input.value === "true";
+      });
+    });
+  }
 
   function renderTypeStep() {
     return `
@@ -1310,7 +1368,7 @@ const FeasibilityPage = (() => {
           class="fp-field-label"
           for="fp-budget-input"
         >
-          Budget (NZD)
+          ${state.projectType === "renovation_and_extension" ? "Combined renovation and extension budget (NZD)" : "Budget (NZD)"}
         </label>
 
         <div class="fp-budget-input-wrap">
@@ -1492,6 +1550,22 @@ const FeasibilityPage = (() => {
 
 
     const sections = [];
+
+    if (state.projectType === "renovation_and_extension") {
+      for (const partName of ["renovation", "extension"]) {
+        const part = state.data[partName];
+        sections.push({
+          title: partName === "renovation" ? "Renovation details" : "Extension details",
+          stepId: `${partName}_details`,
+          lines: [
+            `Existing home: ${part.existingFloorArea === null ? "Not provided" : Formatters.area(part.existingFloorArea)}`,
+            `Work area: ${Formatters.area(part.affectedArea)}`,
+            `Levels: ${part.levels}; bathrooms: ${part.bathrooms}; kitchens: ${part.kitchens}`,
+            ...SCOPE_QUESTIONS[partName].map(q => `${q.label} ${triStateDisplay(part.scope[q.field])}`)
+          ]
+        });
+      }
+    }
 
 
     sections.push({
@@ -1819,6 +1893,10 @@ const FeasibilityPage = (() => {
   function wireStepInputs(
     stepId
   ) {
+    if (stepId === "renovation_details" || stepId === "extension_details") {
+      wireCombinedPart(stepId === "renovation_details" ? "renovation" : "extension");
+      return;
+    }
     if (
       stepId ===
       "type"
@@ -2084,6 +2162,22 @@ const FeasibilityPage = (() => {
   function validateStep(
     stepId
   ) {
+    if (stepId === "renovation_details" || stepId === "extension_details") {
+      const partName = stepId === "renovation_details" ? "renovation" : "extension";
+      const part = state.data[partName];
+      if (!Number.isFinite(part.affectedArea) || part.affectedArea <= 0) {
+        return `Enter an area greater than zero for the ${partName}.`;
+      }
+      if (part.existingFloorArea !== null && (!Number.isFinite(part.existingFloorArea) || part.existingFloorArea <= 0)) {
+        return "Enter an existing home area greater than zero, or leave it blank.";
+      }
+      for (const field of ["levels", "bathrooms", "kitchens"]) {
+        if (!Number.isInteger(part[field]) || part[field] < (field === "levels" ? 1 : 0)) {
+          return "Enter whole numbers: at least one level, and zero or more bathrooms and kitchens.";
+        }
+      }
+      return null;
+    }
     if (
       stepId ===
       "type"

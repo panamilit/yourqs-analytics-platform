@@ -8,6 +8,8 @@ from app.schemas.feasibility import (
     FeasibilityArea,
     FeasibilityLayout,
     FeasibilityScope,
+    FeasibilityBudgetAssessment,
+    FeasibilityResponse,
 )
 
 
@@ -34,3 +36,19 @@ class CombinedFeasibilityRequest(BaseModel):
 
     # this budget covers both parts together
     budget: Decimal | None = Field(default=None, gt=0)
+
+
+class CombinedFeasibilityEstimate(BaseModel):
+    low: Decimal
+    typical: Decimal
+    high: Decimal
+
+
+class CombinedFeasibilityResponse(BaseModel):
+    project_type: Literal["renovation_and_extension"] = "renovation_and_extension"
+    session_id: UUID
+    status: Literal["completed", "insufficient_data"]
+    renovation: FeasibilityResponse
+    extension: FeasibilityResponse
+    estimate: CombinedFeasibilityEstimate | None
+    budget: FeasibilityBudgetAssessment | None

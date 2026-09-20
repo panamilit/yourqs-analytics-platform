@@ -20,6 +20,12 @@ from app.schemas.feasibility import (
     FeasibilityResponse,
 )
 
+from app.schemas.combined_feasibility import (
+    CombinedFeasibilityRequest,
+    CombinedFeasibilityResponse,
+)
+from app.services.combined_feasibility_service import assess_combined
+
 from app.schemas.feasibility_review import (
     FeasibilityReviewRequestData,
     FeasibilityReviewResponse,
@@ -94,6 +100,16 @@ def assess_feasibility(
         request
     )
 
+
+
+@router.post(
+    "/assess-combined",
+    response_model=CombinedFeasibilityResponse,
+)
+def assess_combined_feasibility(
+    request: CombinedFeasibilityRequest,
+) -> CombinedFeasibilityResponse:
+    return assess_combined(request, feasibility_service)
 
 
 @router.post(

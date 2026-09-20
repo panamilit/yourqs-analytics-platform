@@ -75,6 +75,12 @@ const FeasibilityPage = (() => {
     },
 
     {
+      value: "renovation_and_extension",
+      title: "Renovation and Extension",
+      desc: "Renovate existing space and add new floor area in one assessment."
+    },
+
+    {
       value: "multi_unit",
       title: "Multi-Unit Development",
       desc: "Two or more dwellings on one site."
@@ -2311,7 +2317,9 @@ const FeasibilityPage = (() => {
 
       const data =
         await Api.request(
-          "/api/feasibility/assess",
+          state.projectType === "renovation_and_extension"
+            ? "/api/feasibility/assess-combined"
+            : "/api/feasibility/assess",
           {
             method:
               "POST",
@@ -2350,6 +2358,22 @@ const FeasibilityPage = (() => {
 
 
   function buildPayload() {
+    if (state.projectType === "renovation_and_extension") {
+      const payload = {
+        session_id: feasibilitySessionId,
+        project_type: state.projectType,
+        budget: state.data.budget
+      };
+      for (const partName of ["renovation", "extension"]) {
+        const part = state.data[partName];
+        payload[partName] = {
+          area: { floor_area: part.existingFloorArea, affected_area: part.affectedArea },
+          layout: { levels: part.levels, bathrooms: part.bathrooms, kitchens: part.kitchens },
+          scope: { ...part.scope }
+        };
+      }
+      return payload;
+    }
     const base = {
       session_id:
         feasibilitySessionId,
@@ -2610,7 +2634,9 @@ const FeasibilityPage = (() => {
 
 
     els.results.innerHTML =
-      data.status ===
+      data.project_type === "renovation_and_extension"
+        ? renderCombinedReport(data)
+        : data.status ===
       "insufficient_data"
         ? renderInsufficientReport(
             data
@@ -2643,6 +2669,37 @@ const FeasibilityPage = (() => {
     }
   }
 
+
+  function renderCombinedReport(data) {
+    const complete = data.status === "completed" && data.estimate;
+    return `
+      <div class="fp-report-header">
+        <h2 class="fp-step-heading">Renovation and Extension</h2>
+        <p class="fp-report-summary">${complete
+          ? "Your combined estimate includes the two parts shown below."
+          : "There is not enough matching project data for both parts. A combined total is unavailable."}</p>
+      </div>
+      ${["renovation", "extension"].map(partName => {
+        const part = data[partName];
+        return `<section class="fp-card">
+          <h3 class="fp-step-heading">${partName === "renovation" ? "Renovation" : "Extension"}</h3>
+          ${part.status === "completed" && part.estimate ? `
+            <p>Typical estimate: <strong>${Formatters.currency(Number(part.estimate.typical))}</strong></p>
+            <p>Estimated range: ${Formatters.currency(Number(part.estimate.low))} – ${Formatters.currency(Number(part.estimate.high))}</p>
+            <p>Work area: ${Formatters.area(Number(part.estimate.pricing_area))}</p>
+          ` : "<p>Not enough matching projects to estimate this part.</p>"}
+          <p>${escapeHtml(part.evidence.confidence_label)} · ${escapeHtml(part.evidence.comparable_count)} comparable projects</p>
+        </section>`;
+      }).join("")}
+      ${complete ? `<section class="fp-card">
+        <h3 class="fp-step-heading">Combined estimate</h3>
+        <p>Typical total: <strong>${Formatters.currency(Number(data.estimate.typical))}</strong></p>
+        <p>Estimated range: ${Formatters.currency(Number(data.estimate.low))} – ${Formatters.currency(Number(data.estimate.high))}</p>
+        ${data.budget ? `<p>Your budget: ${Formatters.currency(Number(data.budget.amount))} · ${escapeHtml(data.budget.verdict_label)}</p>` : ""}
+      </section>` : ""}
+      <p class="fp-report-summary">These indicative costs add the two estimates together. Shared work should be included only once. Final costs depend on design, specification and site conditions.</p>
+      <button type="button" class="fp-btn fp-btn-primary" id="fp-restart-btn">Start another assessment</button>`;
+  }
 
   function renderCompletedReport(
     data

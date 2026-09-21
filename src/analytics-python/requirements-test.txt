@@ -1,0 +1,5 @@
+# this includes the project's existing python packages
+-r requirements.txt
+
+# adds httpx - lets the tests act like a website sending requests
+httpx==0.28.1

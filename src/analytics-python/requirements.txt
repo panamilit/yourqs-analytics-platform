@@ -25,3 +25,4 @@ websockets==16.1
 PyJWT==2.10.1
 pwdlib[argon2]==0.3.0
 email-validator==2.3.0
+python-multipart==0.0.20

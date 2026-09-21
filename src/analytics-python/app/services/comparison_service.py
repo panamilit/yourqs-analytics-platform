@@ -84,7 +84,7 @@ class ComparisonService:
                 )
             )
 
-        # Preserve the project order sent by the frontend.
+        # Preserve the project order sent by the frontend
         project_order = {
             project_id: index
             for index, project_id

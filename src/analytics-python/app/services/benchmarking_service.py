@@ -48,9 +48,6 @@ class BenchmarkingService:
                 ),
             )
 
-        # ---------------------------------------------------------
-        # Raw benchmark dataset
-        # ---------------------------------------------------------
 
         raw_values = self.repository.get_benchmark_values()
 
@@ -68,9 +65,6 @@ class BenchmarkingService:
             / project["floor_area"]
         )
 
-        # ---------------------------------------------------------
-        # IQR outlier filtering
-        # ---------------------------------------------------------
 
         sorted_values = sorted(raw_values)
 
@@ -89,7 +83,7 @@ class BenchmarkingService:
             q1 - Decimal("1.5") * iqr
         )
 
-        # Cost per m² cannot logically be negative.
+        # Cost per m² cannot logically be negative
         lower_bound = max(
             Decimal("0"),
             statistical_lower_bound,
@@ -118,9 +112,7 @@ class BenchmarkingService:
                 ),
             )
 
-        # ---------------------------------------------------------
-        # Dataset statistics
-        # ---------------------------------------------------------
+
 
         dataset_average = Decimal(
             str(mean(filtered_values))
@@ -133,9 +125,6 @@ class BenchmarkingService:
         dataset_min = min(filtered_values)
         dataset_max = max(filtered_values)
 
-        # ---------------------------------------------------------
-        # Variance from average
-        # ---------------------------------------------------------
 
         if dataset_average == 0:
             variance_from_average_percent = Decimal("0")
@@ -148,9 +137,7 @@ class BenchmarkingService:
                 / dataset_average
             ) * Decimal("100")
 
-        # ---------------------------------------------------------
-        # Variance from median
-        # ---------------------------------------------------------
+
 
         if dataset_median == 0:
             variance_from_median_percent = Decimal("0")
@@ -163,9 +150,7 @@ class BenchmarkingService:
                 / dataset_median
             ) * Decimal("100")
 
-        # ---------------------------------------------------------
-        # Percentile in cleaned benchmark dataset
-        # ---------------------------------------------------------
+
 
         below_or_equal = sum(
             1
@@ -182,9 +167,6 @@ class BenchmarkingService:
             percentile
         )
 
-        # ---------------------------------------------------------
-        # Similar projects
-        # ---------------------------------------------------------
 
         candidate_rows = (
             self.repository.get_similar_project_candidates(
@@ -192,7 +174,7 @@ class BenchmarkingService:
             )
         )
 
-        # Keep benchmark outliers out of the similar-project list.
+        # Keep benchmark outliers out of the similar-project list
         candidate_rows = [
             row
             for row in candidate_rows
@@ -214,9 +196,7 @@ class BenchmarkingService:
             for row in similar_rows
         ]
 
-        # ---------------------------------------------------------
-        # Response
-        # ---------------------------------------------------------
+
 
         return ProjectBenchmarkResponse(
             project_id=project["project_id"],
@@ -271,7 +251,7 @@ class BenchmarkingService:
                 "total_bathroom_count"
             )
 
-            # Same number of levels should be preferred.
+            # Same number of levels should be preferred
             if (
                 target_levels is not None
                 and candidate_levels is not None
@@ -282,12 +262,12 @@ class BenchmarkingService:
             else:
                 level_difference = 999
 
-            # Then choose nearest floor area.
+            # Then choose nearest floor area
             area_difference = abs(
                 candidate["floor_area"] - target_area
             )
 
-            # Bathrooms are a secondary tie-breaker.
+            # Bathrooms are a secondary tie-breaker
             if (
                 target_bathrooms is not None
                 and candidate_bathrooms is not None

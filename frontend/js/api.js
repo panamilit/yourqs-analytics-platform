@@ -1,10 +1,7 @@
 /**
  * api.js
  * All HTTP communication with the FastAPI backend.
- * No rendering, no state, no business calculations —
- * just requests, responses, and error shaping.
  */
-
 
 class ApiError extends Error {
   constructor(
@@ -15,55 +12,30 @@ class ApiError extends Error {
       detail = null
     } = {}
   ) {
-    super(
-      message
-    );
+    super(message);
 
-    this.name =
-      "ApiError";
-
-    this.status =
-      status;
-
-    this.cause =
-      cause;
-
-    this.detail =
-      detail;
+    this.name = "ApiError";
+    this.status = status;
+    this.cause = cause;
+    this.detail = detail;
   }
 }
 
 
 const Api = {
-
-  /**
-   * Build the full URL for a given API path
-   * using the configured backend base URL.
-   */
-  buildUrl(
-    path,
-    params = {}
-  ) {
+  buildUrl(path, params = {}) {
     const base =
-      window.APP_CONFIG
-        .API_BASE_URL
-        .replace(
-          /\/+$/,
-          ""
-        );
-
-
-    const url =
-      new URL(
-        `${base}${path}`
+      window.APP_CONFIG.API_BASE_URL.replace(
+        /\/+$/,
+        ""
       );
 
+    const url = new URL(
+      `${base}${path}`
+    );
 
-    Object.entries(
-      params
-    ).forEach(
+    Object.entries(params).forEach(
       ([key, value]) => {
-
         if (
           value === null ||
           value === undefined ||
@@ -72,7 +44,6 @@ const Api = {
           return;
         }
 
-
         url.searchParams.set(
           key,
           value
@@ -80,160 +51,86 @@ const Api = {
       }
     );
 
-
     return url.toString();
   },
 
 
-  /* ================================================================
-     Projects
-     ================================================================ */
-
-  /**
-   * GET /api/projects/summary
-   */
   async getProjectsSummary(
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        "/api/projects/summary"
-      );
-
+    const url = this.buildUrl(
+      "/api/projects/summary"
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /**
-   * GET /api/projects
-   *
-   * filters:
-   * - search
-   * - min_floor_area
-   * - max_floor_area
-   * - levels
-   * - has_cost_data
-   * - analytics_ready
-   * - page
-   * - page_size
-   * - sort_by
-   * - sort_order
-   */
   async getProjects(
     filters = {},
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        "/api/projects",
-        filters
-      );
-
+    const url = this.buildUrl(
+      "/api/projects",
+      filters
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /**
-   * GET /api/projects/{project_id}/details
-   */
   async getProjectDetails(
     projectId,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        `/api/projects/${encodeURIComponent(
-          projectId
-        )}/details`
-      );
-
+    const url = this.buildUrl(
+      `/api/projects/${
+        encodeURIComponent(projectId)
+      }/details`
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /* ================================================================
-     Benchmarking
-     ================================================================ */
-
-  /**
-   * GET /api/benchmarking/projects/{project_id}
-   */
   async getProjectBenchmark(
     projectId,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        `/api/benchmarking/projects/${encodeURIComponent(
-          projectId
-        )}`
-      );
-
+    const url = this.buildUrl(
+      `/api/benchmarking/projects/${
+        encodeURIComponent(projectId)
+      }`
+    );
 
     return this._request(
       url,
-      {
-        signal
-      }
+      { signal }
     );
   },
 
 
-  /* ================================================================
-     Comparison
-     ================================================================ */
-
-  /**
-   * POST /api/comparison/projects
-   *
-   * body:
-   * {
-   *   projectIds: [...]
-   * }
-   */
   async compareProjects(
     projectIds,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        "/api/comparison/projects"
-      );
-
+    const url = this.buildUrl(
+      "/api/comparison/projects"
+    );
 
     return this._request(
       url,
       {
-        method:
-          "POST",
+        method: "POST",
 
         body: {
           projectIds
@@ -245,38 +142,21 @@ const Api = {
   },
 
 
-  /* ================================================================
-     What-if Analysis
-     ================================================================ */
-
-  /**
-   * POST /api/what-if/projects/{project_id}
-   *
-   * body:
-   * {
-   *   adjustments: [...]
-   * }
-   */
   async runWhatIfScenario(
     projectId,
     adjustments,
-    {
-      signal
-    } = {}
+    { signal } = {}
   ) {
-    const url =
-      this.buildUrl(
-        `/api/what-if/projects/${encodeURIComponent(
-          projectId
-        )}`
-      );
-
+    const url = this.buildUrl(
+      `/api/what-if/projects/${
+        encodeURIComponent(projectId)
+      }`
+    );
 
     return this._request(
       url,
       {
-        method:
-          "POST",
+        method: "POST",
 
         body: {
           adjustments
@@ -288,19 +168,6 @@ const Api = {
   },
 
 
-  /* ================================================================
-     Generic API request
-     ================================================================ */
-
-  /**
-   * Generic request for endpoints outside the
-   * analytics-specific helpers.
-   *
-   * Used by:
-   * - authentication
-   * - feedback
-   * - future application-layer endpoints
-   */
   async request(
     path,
     {
@@ -310,11 +177,9 @@ const Api = {
       signal
     } = {}
   ) {
-    const url =
-      this.buildUrl(
-        path
-      );
-
+    const url = this.buildUrl(
+      path
+    );
 
     return this._request(
       url,
@@ -328,17 +193,6 @@ const Api = {
   },
 
 
-  /* ================================================================
-     Feedback
-     ================================================================ */
-
-  /**
-   * POST /api/feedback
-   *
-   * Requires Authorization header supplied by caller:
-   *
-   * Auth.getAuthorizationHeaders()
-   */
   async createFeedback(
     payload,
     {
@@ -349,25 +203,37 @@ const Api = {
     return this.request(
       "/api/feedback",
       {
-        method:
-          "POST",
-
-        body:
-          payload,
-
+        method: "POST",
+        body: payload,
         headers,
-
         signal
       }
     );
   },
 
 
+  async getMyFeedback(
+    {
+      headers = {},
+      signal
+    } = {}
+  ) {
+    return this.request(
+      "/api/feedback/me",
+      {
+        headers,
+        signal
+      }
+    );
+  },
+
+
+
+
   /**
-   * GET /api/feedback
+   * Get all feedback submissions.
    *
-   * Returns all submissions,
-   * including author information.
+   * Used by the Admin Panel.
    */
   async getAllFeedback(
     {
@@ -386,76 +252,192 @@ const Api = {
 
 
   /**
-   * GET /api/feedback/me
-   *
-   * Returns feedback belonging only
-   * to the current user.
-   *
-   * Kept because it may still be useful elsewhere.
+   * Feasibility Admin:
+   * Overview metrics.
    */
-  async getMyFeedback(
+  async getFeasibilityAdminOverview(
     {
-      headers = {},
       signal
     } = {}
   ) {
     return this.request(
-      "/api/feedback/me",
+      "/api/feasibility/admin/overview",
       {
-        headers,
         signal
       }
     );
   },
 
 
-  /* ================================================================
-     Shared fetch wrapper
-     ================================================================ */
-
-  async _request(
-    url,
+  /**
+   * Feasibility Admin:
+   * Paginated assessment logs.
+   */
+  async getFeasibilityAdminAssessments(
+    filters = {},
     {
-      signal,
-      method = "GET",
-      body = null,
-      headers = {}
+      signal
     } = {}
   ) {
-    let response;
+    const url =
+      this.buildUrl(
+        "/api/feasibility/admin/assessments",
+        filters
+      );
 
+    return this._request(
+      url,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Single assessment details.
+   */
+  async getFeasibilityAdminAssessment(
+    assessmentId,
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      `/api/feasibility/admin/assessments/${
+        encodeURIComponent(
+          assessmentId
+        )
+      }`,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Paginated detailed review requests.
+   */
+  async getFeasibilityAdminReviewRequests(
+    filters = {},
+    {
+      signal
+    } = {}
+  ) {
+    const url =
+      this.buildUrl(
+        "/api/feasibility/admin/review-requests",
+        filters
+      );
+
+    return this._request(
+      url,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Single detailed review request.
+   */
+  async getFeasibilityAdminReviewRequest(
+    reviewRequestId,
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      `/api/feasibility/admin/review-requests/${
+        encodeURIComponent(
+          reviewRequestId
+        )
+      }`,
+      {
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Update detailed review request status.
+   */
+  async updateFeasibilityAdminReviewStatus(
+    reviewRequestId,
+    status,
+    {
+      signal
+    } = {}
+  ) {
+    return this.request(
+      `/api/feasibility/admin/review-requests/${
+        encodeURIComponent(
+          reviewRequestId
+        )
+      }/status`,
+      {
+        method: "PATCH",
+
+        body: {
+          status
+        },
+
+        signal
+      }
+    );
+  },
+
+
+  /**
+   * Feasibility Admin:
+   * Download a file stored in the private
+   * feasibility-review-files bucket.
+   *
+   * The backend performs the authenticated
+   * Storage request and returns the binary file.
+   */
+  async downloadFeasibilityReviewFile(
+    fileId,
+    fallbackFileName = "document",
+    {
+      signal
+    } = {}
+  ) {
+    const url =
+      this.buildUrl(
+        `/api/feasibility/admin/files/${
+          encodeURIComponent(
+            fileId
+          )
+        }/download`
+      );
+
+    let response;
 
     try {
       response =
         await fetch(
           url,
           {
-            method,
+            method: "GET",
 
             headers: {
               Accept:
-                "application/json",
+                "*/*",
 
               ...(
-                body !== null
-                  ? {
-                      "Content-Type":
-                        "application/json"
-                    }
-                  : {}
-              ),
-
-              ...(window.Auth?.getAuthorizationHeaders?.() || {}),
-
-              ...headers
+                window.Auth
+                  ?.getAuthorizationHeaders
+                  ?.() || {}
+              )
             },
-
-            body:
-              body !== null
-                ? JSON.stringify(
-                    body
-                  )
-                : undefined,
 
             signal
           }
@@ -469,12 +451,10 @@ const Api = {
         throw err;
       }
 
-
       throw new ApiError(
         "Unable to reach the server. Check your connection and try again.",
         {
-          cause:
-            err
+          cause: err
         }
       );
     }
@@ -486,11 +466,9 @@ const Api = {
       let detail =
         null;
 
-
       try {
         const errorBody =
           await response.json();
-
 
         detail =
           errorBody?.message ??
@@ -498,9 +476,7 @@ const Api = {
           null;
 
       } catch (_) {
-        /*
-         * Response had no JSON body.
-         */
+        // Response was not JSON.
       }
 
 
@@ -508,7 +484,7 @@ const Api = {
         extractErrorMessage(
           detail
         ) ||
-        `Request failed with status ${response.status}.`,
+          `Request failed with status ${response.status}.`,
         {
           status:
             response.status,
@@ -519,15 +495,239 @@ const Api = {
     }
 
 
+    const blob =
+      await response.blob();
+
+
+    const fileName =
+      getDownloadFileName(
+        response,
+        fallbackFileName
+      );
+
+
+    const objectUrl =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    try {
+      const anchor =
+        document.createElement(
+          "a"
+        );
+
+      anchor.href =
+        objectUrl;
+
+      anchor.download =
+        fileName;
+
+      anchor.style.display =
+        "none";
+
+
+      document.body.appendChild(
+        anchor
+      );
+
+
+      anchor.click();
+
+
+      anchor.remove();
+
+    } finally {
+      window.setTimeout(
+        () => {
+          URL.revokeObjectURL(
+            objectUrl
+          );
+        },
+        1000
+      );
+    }
+  },
+
+
+  /**
+   * Multipart/FormData request.
+   *
+   * IMPORTANT:
+   * Do not manually set Content-Type here.
+   * The browser must create the multipart boundary.
+   */
+  async submitFormData(
+    path,
+    formData,
+    {
+      signal,
+      headers = {}
+    } = {}
+  ) {
+    const url = this.buildUrl(
+      path
+    );
+
+    let response;
+
+    try {
+      response = await fetch(
+        url,
+        {
+          method: "POST",
+
+          headers: {
+            Accept:
+              "application/json",
+
+            ...(
+              window.Auth
+                ?.getAuthorizationHeaders
+                ?.() || {}
+            ),
+
+            ...headers
+          },
+
+          body: formData,
+
+          signal
+        }
+      );
+    } catch (err) {
+      if (
+        err.name ===
+        "AbortError"
+      ) {
+        throw err;
+      }
+
+      throw new ApiError(
+        "Unable to reach the server. Check your connection and try again.",
+        {
+          cause: err
+        }
+      );
+    }
+
+    return this._handleResponse(
+      response
+    );
+  },
+
+
+  async _request(
+    url,
+    {
+      signal,
+      method = "GET",
+      body = null,
+      headers = {}
+    } = {}
+  ) {
+    let response;
+
+    try {
+      response = await fetch(
+        url,
+        {
+          method,
+
+          headers: {
+            Accept:
+              "application/json",
+
+            ...(
+              body !== null
+                ? {
+                    "Content-Type":
+                      "application/json"
+                  }
+                : {}
+            ),
+
+            ...(
+              window.Auth
+                ?.getAuthorizationHeaders
+                ?.() || {}
+            ),
+
+            ...headers
+          },
+
+          body:
+            body !== null
+              ? JSON.stringify(
+                  body
+                )
+              : undefined,
+
+          signal
+        }
+      );
+    } catch (err) {
+      if (
+        err.name ===
+        "AbortError"
+      ) {
+        throw err;
+      }
+
+      throw new ApiError(
+        "Unable to reach the server. Check your connection and try again.",
+        {
+          cause: err
+        }
+      );
+    }
+
+    return this._handleResponse(
+      response
+    );
+  },
+
+
+  async _handleResponse(
+    response
+  ) {
+    if (!response.ok) {
+      let detail = null;
+
+      try {
+        const errorBody =
+          await response.json();
+
+        detail =
+          errorBody?.message ??
+          errorBody?.detail ??
+          null;
+      } catch (_) {
+        // No JSON body.
+      }
+
+      throw new ApiError(
+        extractErrorMessage(
+          detail
+        ) ||
+          `Request failed with status ${response.status}.`,
+        {
+          status:
+            response.status,
+
+          detail
+        }
+      );
+    }
+
     try {
       return await response.json();
-
     } catch (err) {
       throw new ApiError(
         "The server returned an unexpected response.",
         {
-          cause:
-            err
+          cause: err
         }
       );
     }
@@ -535,36 +735,12 @@ const Api = {
 };
 
 
-/**
- * FastAPI error responses can be:
- *
- * {
- *   "detail": "Invalid email or password."
- * }
- *
- * or validation arrays:
- *
- * {
- *   "detail": [
- *     {
- *       "loc": [...],
- *       "msg": "...",
- *       "type": "..."
- *     }
- *   ]
- * }
- *
- * Convert either shape into one readable message.
- */
 function extractErrorMessage(
   detail
 ) {
-  if (
-    !detail
-  ) {
+  if (!detail) {
     return "";
   }
-
 
   if (
     typeof detail ===
@@ -573,16 +749,12 @@ function extractErrorMessage(
     return detail;
   }
 
-
   if (
-    Array.isArray(
-      detail
-    ) &&
+    Array.isArray(detail) &&
     detail.length > 0
   ) {
     const first =
       detail[0];
-
 
     if (
       typeof first ===
@@ -590,7 +762,6 @@ function extractErrorMessage(
     ) {
       return first;
     }
-
 
     if (
       first &&
@@ -601,6 +772,94 @@ function extractErrorMessage(
     }
   }
 
-
   return "";
+}
+
+
+function getDownloadFileName(
+  response,
+  fallbackFileName
+) {
+  const disposition =
+    response.headers.get(
+      "Content-Disposition"
+    );
+
+
+  if (
+    !disposition
+  ) {
+    return (
+      fallbackFileName ||
+      "document"
+    );
+  }
+
+
+  /*
+   * RFC 5987:
+   * filename*=UTF-8''example.pdf
+   */
+  const encodedMatch =
+    disposition.match(
+      /filename\*=UTF-8''([^;]+)/i
+    );
+
+
+  if (
+    encodedMatch &&
+    encodedMatch[1]
+  ) {
+    try {
+      return decodeURIComponent(
+        encodedMatch[1]
+      );
+
+    } catch (_) {
+      return encodedMatch[1];
+    }
+  }
+
+
+  /*
+   * Standard:
+   * filename="example.pdf"
+   */
+  const quotedMatch =
+    disposition.match(
+      /filename="([^"]+)"/i
+    );
+
+
+  if (
+    quotedMatch &&
+    quotedMatch[1]
+  ) {
+    return quotedMatch[1];
+  }
+
+
+  /*
+   * Standard without quotes:
+   * filename=example.pdf
+   */
+  const plainMatch =
+    disposition.match(
+      /filename=([^;]+)/i
+    );
+
+
+  if (
+    plainMatch &&
+    plainMatch[1]
+  ) {
+    return plainMatch[1]
+      .trim();
+  }
+
+
+  return (
+    fallbackFileName ||
+    "document"
+  );
 }

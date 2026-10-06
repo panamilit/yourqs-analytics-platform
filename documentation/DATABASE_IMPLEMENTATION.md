@@ -3644,4 +3644,3 @@ The primary purpose of this document is to make the implemented database behavio
 
 The PostgreSQL/Supabase implementation should be treated as the reference for what was developed and tested during the project.
 
-It should not be interpreted as documentation of the existing YourQS production Firebird database.
